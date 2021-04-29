@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="133.0" prefWidth="840.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Slider layoutX="5.0" layoutY="105.0" prefHeight="24.0" prefWidth="850.0" />
-      <Button layoutX="14.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="Open" />
-      <Button layoutX="76.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="Play" />
-      <Button layoutX="138.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="Pause" />
-      <Button layoutX="197.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&lt;&lt;" />
-      <Button layoutX="258.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&lt;" />
-      <Button layoutX="321.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="Stop" />
-      <Button layoutX="383.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&gt;" />
-      <Button layoutX="444.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&gt;&gt;" />
+      <Button layoutX="14.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" text="Open File" />
+      <Button layoutX="105.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="Play" />
+      <Button layoutX="167.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="Pause" />
+      <Button layoutX="229.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&lt;&lt;" />
+      <Button layoutX="291.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&lt;" />
+      <Button layoutX="353.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="Stop" />
+      <Button layoutX="415.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&gt;" />
+      <Button layoutX="477.0" layoutY="62.0" minWidth="51.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="51.0" text="&gt;&gt;" />
+      <Text layoutX="546.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Play Speed" wrappingWidth="97.546875">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <ChoiceBox layoutX="651.0" layoutY="67.0" prefHeight="27.0" prefWidth="37.0" />
    </children>
 </Pane>
