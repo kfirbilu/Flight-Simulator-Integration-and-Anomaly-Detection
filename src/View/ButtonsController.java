@@ -44,9 +44,9 @@ public class ButtonsController implements Initializable {
 
         if (xmlFile!=null)  // what to do if the file opened successfully
         {
-            //Desktop desktop = Desktop.getDesktop();  //opens the file
+            Desktop desktop = Desktop.getDesktop();  //opens the file
 
-            //desktop.open(xmlFile);  //opens the file
+            desktop.open(xmlFile);  //opens the file
 
             successAlert();
         }
