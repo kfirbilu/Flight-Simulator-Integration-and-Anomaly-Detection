@@ -53,6 +53,8 @@ public class ZScore implements TimeSeriesAnomalyDetector {
 
     }
 
+
+
     @Override
     public List<AnomalyReport> detect(TimeSeries ts) {
 
@@ -82,7 +84,6 @@ public class ZScore implements TimeSeriesAnomalyDetector {
 
                     }
             }
-
         }
         return detected;
     }
