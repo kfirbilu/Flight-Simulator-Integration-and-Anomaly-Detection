@@ -365,7 +365,7 @@ public class Commands {
 			for (Point p:getSharedState().pointList)
 			  	rangeSum+= p.y - p.x + 1;
 
-			float N = getSharedState().test.getCols()[0].getfeatures().size()- rangeSum;     ///////////////////////////
+			float N = getSharedState().test.getCols()[0].getFloats().size()- rangeSum;     ///////////////////////////
 
 
 

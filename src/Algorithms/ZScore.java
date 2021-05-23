@@ -1,92 +1,74 @@
 package Algorithms;
 
 import Server.AnomalyReport;
-import Server.StatLib;
 import Server.TimeSeries;
 import Server.TimeSeriesAnomalyDetector;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static Server.StatLib.avg;
+import static Server.StatLib.var;
+
 public class ZScore implements TimeSeriesAnomalyDetector {
-
     public float[] thresholdArray;
+    public ArrayList<ArrayList<Float>> colZscores = new ArrayList<>();
 
-    public ZScore(TimeSeries timeSeries1) {
-
-            thresholdArray = new float[timeSeries1.getCols().length];
-    }
 
     @Override
-    public void learnNormal(TimeSeries ts) {
-
-
-        for (int i = 0; i < ts.getCols().length; i++) {
-
-            float max = -999;
-
-            for (int j = 2; j < ts.getCols()[i].getfeatures().size(); j++) {
-
-                float avg = StatLib.avg(StatLib.listToArr(ts.getCols()[i].getfeatures().subList(0, j)));
-
-                float standardDeviation = (float) Math.sqrt(StatLib.var(StatLib.listToArr(ts.getCols()[i].getfeatures().subList(0, j))));
-
-                for (int k = 0; k < j; k++) {
-                    float zScore;
-
-                    if (standardDeviation == 0)
-                        zScore = 0;
-
-                    else
-                        zScore = Math.abs(ts.getCols()[i].getfeatures().get(k) - avg) / standardDeviation;
-
-                    if (zScore > max)
-                        max = zScore;
-
+    public void learnNormal(TimeSeries timeSeries) {
+        thresholdArray = new float[timeSeries.getCols().length];
+        float max = -1;
+        float xTreshold;
+        ArrayList<Float> zscoresCol = null;
+        for (int i = 0; i < timeSeries.getCols().length; i++) {
+            zscoresCol = new ArrayList<>();
+            for (int j = 0; j < timeSeries.getCols()[i].getFloats().size(); j++) {
+                if (j != 0 && j != 1)
+                    xTreshold = Zscore(j, ArrayListToFloat(timeSeries.getCols()[i].getFloats().subList(0, j - 1)));
+                else
+                    xTreshold = 0;
+                zscoresCol.add(xTreshold);
+                if (max < xTreshold) {
+                    max = xTreshold;
                 }
-
             }
-
-            thresholdArray[i]=max;
-
+            colZscores.add(zscoresCol);
+            thresholdArray[i] = max;
         }
-
     }
-
-
 
     @Override
-    public List<AnomalyReport> detect(TimeSeries ts) {
-
-        List<AnomalyReport> detected = new ArrayList<>();
-
-        for (int i = 0; i < ts.getCols().length; i++) {
-
-            float max = -999;
-
-            for (int j = 2; j < ts.getCols()[i].getfeatures().size(); j++) {
-
-                float avg = StatLib.avg(StatLib.listToArr(ts.getCols()[i].getfeatures().subList(0, j)));
-
-                float standardDeviation = (float) Math.sqrt(StatLib.var(StatLib.listToArr(ts.getCols()[i].getfeatures().subList(0, j))));
-
-                if (standardDeviation != 0)
-                    for (int k = 0; k < j; k++) {
-                        float zScore = Math.abs(ts.getCols()[i].getfeatures().get(k) - avg) / standardDeviation;
-
-                        if (zScore > thresholdArray[i]) {
-                            AnomalyReport anomalyReport = new AnomalyReport(ts.getCols()[i].getName(), k + 1);
-
-                            if (!detected.contains(anomalyReport))
-                                detected.add(anomalyReport);
-
-                        }
-
-                    }
+    public List<AnomalyReport> detect(TimeSeries timeSeries) {
+        List<AnomalyReport> anomalyReports = new ArrayList<>();
+        float xTreshold;
+        for (int i = 0; i < timeSeries.getCols().length; i++) {
+            String columnName = timeSeries.getCols()[i].getName();
+            for (int j = 0; j < timeSeries.getCols()[i].getFloats().size(); j++) {
+                if (j != 0 && j != 1)
+                    xTreshold = Zscore(j, ArrayListToFloat(timeSeries.getCols()[i].getFloats().subList(0, j - 1)));
+                else
+                    xTreshold = 0;
+                if (xTreshold > thresholdArray[i]) {
+                    anomalyReports.add(new AnomalyReport(columnName, j));
+                }
             }
         }
-        return detected;
+        return anomalyReports;
     }
 
+    public static float[] ArrayListToFloat(List<Float> floatList) {
+        float[] floatArr = new float[floatList.size()];
+        for (int i = 0; i < floatArr.length; i++) {
+            floatArr[i] = floatList.get(i);
+        }
+        return floatArr;
+    }
 
+    public static float Zscore(float x, float[] arr) {
+        if (var(arr) == 0)
+            return 0;
+        return (float) (Math.abs((x - avg(arr))
+                / Math.sqrt(var(arr))));
+    }
 }

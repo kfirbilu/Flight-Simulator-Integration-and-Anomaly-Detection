@@ -29,7 +29,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector
 		
 		for (int i = 0; i < colsNames.length; i++)
 		{
-			ArrayList<Float> temp = ts.getCols()[i].getfeatures();
+			ArrayList<Float> temp = ts.getCols()[i].getFloats();
 			
 			float[] arrtemp = ts.ArrListToArr(temp);
 			
@@ -38,7 +38,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector
 				
 				if (colsNames[i] != colsNames[j])
 				{
-					ArrayList<Float> temp2 = ts.getCols()[j].getfeatures();
+					ArrayList<Float> temp2 = ts.getCols()[j].getFloats();
 				
 					float[] arrtemp2 = ts.ArrListToArr(temp2);
 
@@ -57,7 +57,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector
 			if (max_pearson > 0)
 			{
 			
-				Point[] pointsArr = ts.ArrToPoint(arrtemp, ts.ArrListToArr(ts.getCols()[index].getfeatures()));
+				Point[] pointsArr = ts.ArrToPoint(arrtemp, ts.ArrListToArr(ts.getCols()[index].getFloats()));
 			
 				Line l = StatLib.linear_reg(pointsArr);
 			
@@ -98,10 +98,10 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector
 			for (int j = 0; j < ts.getCols().length; j++)
 			{
 				if(ts.getCols()[j].getName().equals(feature1))
-					featuresList1 = ts.getCols()[j].getfeatures();
+					featuresList1 = ts.getCols()[j].getFloats();
 				
 				if(ts.getCols()[j].getName().equals(feature2))
-					featuresList2 = ts.getCols()[j].getfeatures();
+					featuresList2 = ts.getCols()[j].getFloats();
 			}
 			
 			

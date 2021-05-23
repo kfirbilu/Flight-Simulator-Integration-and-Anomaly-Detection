@@ -1,107 +1,256 @@
 package ViewModel;
 
+import Algorithms.Circle;
+import Algorithms.ZScore;
 import Model.Model;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import Server.Line;
+import Server.Point;
+import javafx.beans.property.*;
 import java.util.ArrayList;
 import java.util.Observable;
-import java.util.Observer;
 
+public class ViewModel extends AllViewModels {
 
+    private ArrayList<String> colsNames;
 
-public class ViewModel extends Observable implements Observer {
+    private ArrayList<Float> algorithmColValues;
+    private ArrayList<Float> algorithmCoralatedColValues;
+    private ArrayList<Float> anomalyAlgorithmColValues;
+    private ArrayList<Float> anomalyAlgorithmCoralatedColValues;
+    private ArrayList<Float> ZScoreline;
+
+    private String className;
+
+    private Line algorithmLine;
+    private Circle algorithmCircle;
 
     Model model;
 
-    StringProperty loadXMLResult;
+    private int minColValue;
+    private int maxColValue;
 
-    StringProperty openCSVResult;
+    private IntegerProperty flightLong;
+    private IntegerProperty numofrow;
+    private IntegerProperty report;
 
-    DoubleProperty minAileron;
+    private StringProperty loadXMLResult;
+    private StringProperty resultLoadAlgorithm;
+    private StringProperty openCSVResult;
+    private StringProperty chosenXMLFilePath;
+    private StringProperty chosenCSVFilePath;
+    private StringProperty time;
 
-    DoubleProperty maxAileron;
+    private DoubleProperty minRudder;
+    private DoubleProperty maxRudder;
+    private DoubleProperty minThrottle;
+    private DoubleProperty maxThrottle;
+    private DoubleProperty maxTimeSlider;
 
-    DoubleProperty minElevator;
+    private FloatProperty rudderstep;
+    private FloatProperty throttlestep;
+    private FloatProperty altimeterstep;
+    private FloatProperty airspeedstep;
+    private FloatProperty directionstep;
+    private FloatProperty pitchstep;
+    private FloatProperty rollstep;
+    private FloatProperty yawstep;
+    private FloatProperty aileronstep;
+    private FloatProperty elevatorstep;
 
-    DoubleProperty maxElevator;
-
-    StringProperty XMLFilePath;
-
-    StringProperty CSVFilePath;
-
-    public ArrayList<String> colsNames;
-
-    public String time;
-
-    public float aileronstep;
-
-    public float elevatorstep;
-
-    public StringProperty getXMLFilePathProperty() {
-        return XMLFilePath;
-    }
-    public StringProperty getCSVFilePathProperty() {
-        return CSVFilePath;
-    }
-    public DoubleProperty getMinAileron() {
-        return minAileron;
-    }
-    public DoubleProperty getMaxAileron() {
-        return maxAileron;
+    public ArrayList<String> getColsNames() {
+        return colsNames;
     }
 
-    public DoubleProperty getMinElevator() {
-        return minElevator;
-    }
-    public DoubleProperty getMaxElevator() {
-        return maxElevator;
+    public ArrayList<Float> getAlgorithmColValues() {
+        return algorithmColValues;
     }
 
-    public StringProperty loadXMLProperty() {
+    public ArrayList<Float> getAlgorithmCoralatedColValues() {
+        return algorithmCoralatedColValues;
+    }
+
+    public ArrayList<Float> getAnomalyAlgorithmColValues()
+    {
+        return anomalyAlgorithmColValues;
+    }
+
+    public ArrayList<Float> getAnomalyAlgorithmCoralatedColValues()
+    {
+        return anomalyAlgorithmCoralatedColValues;
+    }
+
+    public ArrayList<Float> getZScoreline()
+    {
+        return ZScoreline;
+    }
+
+    public Line getAlgorithmLine() {
+        return algorithmLine;
+    }
+
+    public Circle getAlgorithmCircle()
+    {
+        return algorithmCircle;
+    }
+
+    public String getClassName()
+    {
+        return className;
+    }
+
+    public int getMinColValue()
+    {
+        return minColValue;
+    }
+
+    public int getMaxColValue()
+    {
+        return maxColValue;
+    }
+
+    public IntegerProperty getFlightLong() {
+        return flightLong;
+    }
+
+    public IntegerProperty getNumofrow()
+    {
+        return numofrow;
+    }
+
+    public IntegerProperty getReport()
+    {
+        return report;
+    }
+
+    public StringProperty getChosenXMLFilePath() {
+        return chosenXMLFilePath;
+    }
+
+    public StringProperty getChosenCSVFilePath() {
+        return chosenCSVFilePath;
+    }
+
+    public StringProperty getTime() {
+        return time;
+    }
+
+    public StringProperty getLoadXMLResult() {
         return loadXMLResult;
     }
 
-
-    public StringProperty OpenCSVProperty() {
+    public StringProperty getOpenCSVResult() {
         return openCSVResult;
     }
 
-    public void VMLoadXML()
+    public StringProperty getResultLoadAlgorithm()
     {
-        model.ModelLoadXML(XMLFilePath.getValue());
+        return resultLoadAlgorithm;
     }
 
-    public void VMOpenCSV()
-    {
-        model.ModelOpenCSV(CSVFilePath.getValue());
+    public DoubleProperty getMinRudder() {
+        return minRudder;
     }
 
-    public ViewModel(Model model)  {   // CTOR
+    public DoubleProperty getMaxRudder() {
+        return maxRudder;
+    }
+
+    public DoubleProperty getMinThrottle() {
+        return minThrottle;
+    }
+
+    public DoubleProperty getMaxThrottle() {
+        return maxThrottle;
+    }
+
+    public DoubleProperty getMaxTimeSlider() {
+        return maxTimeSlider;
+    }
+
+    public FloatProperty getRudderstep() {
+        return rudderstep;
+    }
+
+    public FloatProperty getThrottlestep() {
+        return throttlestep;
+    }
+
+    public FloatProperty getAltimeterstep() {
+        return altimeterstep;
+    }
+
+    public FloatProperty getAirspeedstep() {
+        return airspeedstep;
+    }
+
+    public FloatProperty getDirectionstep() {
+        return directionstep;
+    }
+
+    public FloatProperty getPitchstep() {
+        return pitchstep;
+    }
+
+    public FloatProperty getRollstep() {
+        return rollstep;
+    }
+
+    public FloatProperty getYawstep() {
+        return yawstep;
+    }
+
+    public FloatProperty getAileronstep() {
+        return aileronstep;
+    }
+
+    public FloatProperty getElevatorstep() {
+        return elevatorstep;
+    }
+
+    public ViewModel(Model model) {
         this.model = model;
+
+        colsNames = new ArrayList<>();
+        algorithmColValues = new ArrayList<>();
+        algorithmCoralatedColValues = new ArrayList<>();
+        ZScoreline = new ArrayList<>();
+
         loadXMLResult = new SimpleStringProperty();
         openCSVResult = new SimpleStringProperty();
-        XMLFilePath = new SimpleStringProperty();
-        CSVFilePath = new SimpleStringProperty();
-        minAileron = new SimpleDoubleProperty();
-        maxAileron = new SimpleDoubleProperty();
-        minElevator = new SimpleDoubleProperty();
-        maxElevator = new SimpleDoubleProperty();
-        colsNames = new ArrayList<>();
+        resultLoadAlgorithm = new SimpleStringProperty();
+        chosenXMLFilePath = new SimpleStringProperty();
+        chosenCSVFilePath = new SimpleStringProperty();
+        time = new SimpleStringProperty();
+
+        minRudder = new SimpleDoubleProperty();
+        maxRudder = new SimpleDoubleProperty();
+        minThrottle = new SimpleDoubleProperty();
+        maxThrottle = new SimpleDoubleProperty();
+        maxTimeSlider = new SimpleDoubleProperty();
+
+        rudderstep = new SimpleFloatProperty();
+        throttlestep = new SimpleFloatProperty();
+        altimeterstep = new SimpleFloatProperty();
+        airspeedstep = new SimpleFloatProperty();
+        directionstep = new SimpleFloatProperty();
+        pitchstep = new SimpleFloatProperty();
+        rollstep = new SimpleFloatProperty();
+        yawstep = new SimpleFloatProperty();
+        aileronstep = new SimpleFloatProperty();
+        elevatorstep = new SimpleFloatProperty();
+
+        flightLong = new SimpleIntegerProperty();
+        numofrow = new SimpleIntegerProperty();
+        report = new SimpleIntegerProperty();
+        report.set(0);
+
     }
 
-
-
-
-
     @Override
-    public void update(java.util.Observable o, Object arg) {
+    public void update(Observable o, Object arg) {
+        String p = (String) arg;
 
-        String p = (String)arg;
-        if (p.intern() == "resultLoadXML")
-        {
+        if (p.intern() == "resultLoadXML") {
             if (model.getResultLoadXML().intern() == "WrongFormatAlert")
                 loadXMLResult.set("WrongFormatAlert");
             if (model.getResultLoadXML().intern() == "MissingArgumentAlert")
@@ -109,99 +258,161 @@ public class ViewModel extends Observable implements Observer {
             if (model.getResultLoadXML().intern() == "SuccessAlert")
                 loadXMLResult.set("SuccessAlert");
         }
-        if (p.intern() == "resultOpenCSV")
-        {
+        if (p.intern() == "resultOpenCSV") {
             if (model.getResultOpenCSV().intern() == "Missing Arguments")
                 openCSVResult.set("Missing Arguments");
             if (model.getResultOpenCSV().intern() == "Incompatibility with XML file")
                 openCSVResult.set("Incompatibility with XML file");
-            if (model.getResultOpenCSV().intern() == "OK")
-            {
+            if (model.getResultOpenCSV().intern() == "OK") {
                 openCSVResult.set("OK");
-                for (String name : model.getColsNames())
-                {
+                for (String name : model.getColsNames()) {
                     colsNames.add(name);
                 }
-                setChanged();
-                notifyObservers("colNames");
             }
         }
         if (p.intern() == "time")
-        {
-            time = model.gettime();
-            setChanged();
-            notifyObservers("time");
-        }
+            time.set(model.gettime());
+        if (p.intern() == "rudder")
+            rudderstep.set(model.getRudderstep());
+        if (p.intern() == "throttle")
+            throttlestep.set(model.getThrottlestep());
+        if (p.intern() == "altimeter")
+            altimeterstep.set(model.getAltimeterstep());
+        if (p.intern() == "airspeed")
+            airspeedstep.set(model.getAirspeedstep());
+        if (p.intern() == "direction")
+            directionstep.set(model.getDirectionstep());
+        if (p.intern() == "pitch")
+            pitchstep.set(model.getPitchstep());
+        if (p.intern() == "roll")
+            rollstep.set(model.getRollstep());
+        if (p.intern() == "yaw")
+            yawstep.set(model.getYawstep());
         if (p.intern() == "aileron")
-        {
-            aileronstep = model.getAileronstep();
-            setChanged();
-            notifyObservers("aileron");
-        }
+            aileronstep.set(model.getAileronstep());
         if (p.intern() == "elevator")
+            elevatorstep.set(model.getElevatorstep());
+        if (p.intern() == "numofrow")
+            numofrow.set(model.getNumofrow());
+        if (p.intern() == "report")
+            report.set(1);
+        if (p.intern() == "reportDone")
+            report.set(0);
+        if (p.intern() == "resultLoadAlgorithm")
         {
-            elevatorstep = model.getElevatorstep();
-            setChanged();
-            notifyObservers("elevator");
+            if (model.getResultLoadAlgorithm().intern() == "failed")
+                resultLoadAlgorithm.set("failed");
+            else
+                resultLoadAlgorithm.set("success");
         }
-
     }
 
+    public void VMLoadXML() {
+        model.ModelLoadXML(chosenXMLFilePath.getValue());
+    }
 
-    public void ViewModelPlay()
-    {
+    public void VMOpenCSV() {
+        model.ModelOpenCSV(chosenCSVFilePath.getValue());
+        flightLong.set(model.getFlightLong());
+    }
+
+    public void VMplay() {
         model.modelPlay();
     }
 
-    public void ViewModelGetChoice(String speed)
-    {
+    public void VMGetChoice(String speed) {
         model.modelGetChoice(speed);
     }
 
-    public void ViewModelPause()
-    {
+    public void VMpause() {
         model.modelpause();
     }
 
-    public void ViewModelPlus15Sec()
-    {
+    public void VMplus15() {
         model.modelPlus15();
     }
 
-    public void ViewModelMinus15Sec()
-    {
+    public void VMminus15() {
         model.modelMinus15();
     }
 
-    public void ViewModelMinus30Sec()
-    {
+    public void VMminus30() {
         model.modelMinus30();
     }
 
-    public void ViewModelPlus30Sec()
-    {
+    public void VMplus30() {
         model.modelPlus30();
     }
 
-    public void ViewModelSetMinAileron()
-    {
-        minAileron.setValue(model.modelSetMinAileron());
+    public void VMsetMinRudder() {
+        minRudder.setValue(model.modelSetMinRudder());
     }
 
-    public void ViewModelSetMaxAileron()
-    {
-        maxAileron.setValue(model.modelSetMaxAileron());
+    public void VMsetMaxRudder() {
+        maxRudder.setValue(model.modelSetMaxRudder());
     }
 
-    public void ViewModelSetMinElevator()
-    {
-        minElevator.setValue(model.modelSetMinElevator());
+    public void VMsetMinThrottle() {
+        minThrottle.setValue(model.modelSetMinThrottle());
     }
 
-    public void ViewModelSetMaxElevator()
-    {
-        maxElevator.setValue(model.modelSetMaxElevator());
+    public void VMsetMaxThrottle() {
+        maxThrottle.setValue(model.modelSetMaxThrottle());
     }
 
+    public void setMaxTimeSlider() {
+        maxTimeSlider.setValue(model.modelSetMaxTimeSlider());
+    }
 
+    public void VMtimeslider(double second) {
+        model.modelTimeSlider(second);
+    }
+
+    public void VMstop() {
+        model.modelStop();
+    }
+
+    public void VMsetLeftLineChart(String colName)
+    {
+        model.modelSetLeftLineChart(colName);
+    }
+
+    public void VMsetRightLineChart(String colName)
+    {
+        model.modelSetRightLineChart(colName);
+    }
+
+    public void VMsetAlgorithmLineChart(String colName)
+    {
+        model.modelSetAlgorithmLineChart(colName);
+        className = model.getClassName();
+        algorithmColValues = model.getAlgorithmColValues();
+        algorithmCoralatedColValues = model.getAlgorithmCoralatedColValues();
+
+        if (className.intern() == "class Model.LinearRegression")
+        {
+            anomalyAlgorithmColValues = model.getAnomalyAlgorithmColValues();
+            anomalyAlgorithmCoralatedColValues = model.getAnomalyAlgorithmCoralatedColValues();
+            algorithmLine = model.getAlgorithmLine();
+            maxColValue = model.getMaxColValue();
+            minColValue = model.getMinColValue();
+        }
+
+        if (className.intern() == "class Model.ZScore")
+        {
+            ZScoreline = model.getZScoreLine();
+        }
+
+        if (className.intern() == "class Model.Hybrid")
+        {
+            anomalyAlgorithmColValues = model.getAnomalyAlgorithmColValues();
+            anomalyAlgorithmCoralatedColValues = model.getAnomalyAlgorithmCoralatedColValues();
+            algorithmCircle = model.getAlgorithmCircle();
+        }
+    }
+
+    public void VMLoadAlgorithm(String resultClassDirectory, String resultClassName)
+    {
+        model.modelLoadAlgorithm(resultClassDirectory, resultClassName);
+    }
 }

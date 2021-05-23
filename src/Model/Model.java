@@ -1,28 +1,23 @@
 
 package Model;
 
-import Server.XMLHandler;
-import Server.TimeSeries;
-import javafx.application.Platform;
-
+import Algorithms.*;
+import Server.*;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
+import java.util.*;
 
-public class Model extends Observable
-{
-    public Map<String, Integer> CSVindexmap = new HashMap<>();
-    public static XMLHandler XML_settings;
-    public static String CSVpath;
+public class Model extends AllModels {
 
-    Thread simulatorThread = null;
+    static XMLHandler XML_settings;
+    static String CSVpath;
+
     Thread simulator20Thread = null;
-    Thread timerThread = null;
     Thread timer20Thread = null;
     Thread simulator05Thread = null;
     Thread timer05Thread = null;
@@ -32,24 +27,60 @@ public class Model extends Observable
     Thread timer15Thread = null;
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss.S");
-    int flag = 0;
+
+    int playFlag = 0;
+    int numofrow = 0;
+    int saveI = -1;
+    int flightLong;
+    private int minColValue = 10000;
+    private int maxColValue = -10000;
     long nowTime = 0;
 
     Socket fg = null;
     TimeSeries in = null;
     PrintWriter out = null;
+
     private String time;
+    private String resultLoadXML;
+    private String resultOpenCSV;
+    private String resultLoadAlgorithm;
+    String nameOfCol;
+    String nameOfCoralatedCol;
+    String className;
+
+    private int realHybrid = 0;
+
+    private float rudderstep;
+    private float throttlestep;
+    private float altimeterstep;
+    private float airspeedstep;
+    private float directionstep;
+    private float pitchstep;
+    private float aileronstep;
+    private float elevatorstep;
+    private float rollstep;
+    private float yawstep;
+
+    private Line algorithmLine;
+    private Circle algorithmCircle;
+
+    private ArrayList<String> colsNames = new ArrayList<>();
+    private Map<String, Integer> CSVindexmap = new HashMap<>();
+    private ArrayList<Float> algorithmColValues = new ArrayList<>();
+    private ArrayList<Float> algorithmCoralatedColValues = new ArrayList<>();
+    private ArrayList<Float> anomalyAlgorithmCoralatedColValues = new ArrayList<>();
+    private ArrayList<Float> anomalyAlgorithmColValues = new ArrayList<>();
+    private ArrayList<Float> ZScoreLine = new ArrayList<>();
+
+    TimeSeriesAnomalyDetector ad;
+    TimeSeries regularFlight;
+    linearRegresion linearRegression = new linearRegresion();
+    ZScore zScore = new ZScore();
+    hybrid hybrid = new hybrid();
+    List<AnomalyReport> reports = new ArrayList<>();
 
     public String gettime() {
         return time;
-    }
-
-    private String resultLoadXML;
-    private String resultOpenCSV;
-    ArrayList <String> colsNames = new ArrayList<>();
-
-    public ArrayList<String> getColsNames() {
-        return colsNames;
     }
 
     public String getResultOpenCSV() {
@@ -60,9 +91,113 @@ public class Model extends Observable
         return resultLoadXML;
     }
 
-
-    public void ModelLoadXML(String chosenPath)
+    public String getResultLoadAlgorithm()
     {
+        return resultLoadAlgorithm;
+    }
+
+    public String getClassName()
+    {
+        return className;
+    }
+
+    public ArrayList<String> getColsNames() {
+        return colsNames;
+    }
+
+    public ArrayList<Float> getAlgorithmColValues() {
+        return algorithmColValues;
+    }
+
+    public ArrayList<Float> getAlgorithmCoralatedColValues() {
+        return algorithmCoralatedColValues;
+    }
+
+    public ArrayList<Float> getAnomalyAlgorithmColValues()
+    {
+        return anomalyAlgorithmColValues;
+    }
+
+    public ArrayList<Float> getAnomalyAlgorithmCoralatedColValues()
+    {
+        return anomalyAlgorithmCoralatedColValues;
+    }
+
+    public ArrayList<Float> getZScoreLine() {
+        return ZScoreLine;
+    }
+
+    public float getRudderstep() {
+        return rudderstep;
+    }
+
+    public float getThrottlestep() {
+        return throttlestep;
+    }
+
+    public float getAileronstep() {
+        return aileronstep;
+    }
+
+    public float getElevatorstep() {
+        return elevatorstep;
+    }
+
+    public float getAltimeterstep() {
+        return altimeterstep;
+    }
+
+    public float getAirspeedstep() {
+        return airspeedstep;
+    }
+
+    public float getDirectionstep() {
+        return directionstep;
+    }
+
+    public float getPitchstep() {
+        return pitchstep;
+    }
+
+    public float getRollstep() {
+        return rollstep;
+    }
+
+    public float getYawstep() {
+        return yawstep;
+    }
+
+    public int getMinColValue()
+    {
+        return minColValue;
+    }
+
+    public int getMaxColValue()
+    {
+        return maxColValue;
+    }
+
+    public int getNumofrow()
+    {
+        return numofrow;
+    }
+
+    public int getFlightLong()
+    {
+        return flightLong;
+    }
+
+    public Line getAlgorithmLine() {
+        return algorithmLine;
+    }
+
+    public Circle getAlgorithmCircle()
+    {
+        return algorithmCircle;
+    }
+
+
+    public void ModelLoadXML(String chosenPath) {
         XMLHandler handleXML = new XMLHandler();
         try {
             handleXML.getSettingsFromXML(chosenPath);
@@ -76,77 +211,85 @@ public class Model extends Observable
         else {
             XML_settings = handleXML;
             resultLoadXML = "SuccessAlert";
+            regularFlight = new TimeSeries(XML_settings.additionalSettings.getCsvFile());
+            regularFlight.setCorrelationTresh(0);
+            linearRegression.learnNormal(regularFlight);
+            zScore.learnNormal(regularFlight);
+            hybrid.HybridAlgorithm(regularFlight);
+            hybrid.learnNormal(regularFlight);
         }
         setChanged();
         notifyObservers("resultLoadXML");
     }
 
-    public void ModelOpenCSV(String chosenPath)
-    {
-        int flag1 = 0;
+    public void ModelOpenCSV(String chosenPath) {
+        int openFlag = 0;
         TimeSeries timeSeries = new TimeSeries(chosenPath);
-        for (int i = 0; i < timeSeries.getCols().length; i++)
-        {
+        for (int i = 0; i < timeSeries.getCols().length; i++) {
             int k = 0;
-            while (k != 11) {
-                if (timeSeries.getCols()[i].getName().intern() == XML_settings.settingsList.get(k).getRealColName().intern()) { ;
-                    CSVindexmap.put(XML_settings.settingsList.get(k).getColName(), i);
+            while (k != 10) {
+                if (timeSeries.getCols()[i].getName().intern() == XML_settings.settingsList.get(k).getRealColName().intern()) {
+                    if (CSVindexmap.get(XML_settings.settingsList.get(k).getColName()) == null)
+                        CSVindexmap.put(XML_settings.settingsList.get(k).getColName(), i);
                     break;
                 }
                 k++;
             }
-            if (CSVindexmap.size() == 11)
+            if (CSVindexmap.size() == 10)
                 break;
         }
 
-        for (String colname : XML_settings.RealToAssosicate.keySet())
-        {
+        for (String colname : XML_settings.RealToAssosicate.keySet()) {
             int index = CSVindexmap.get(XML_settings.RealToAssosicate.get(colname));
-            for (Float num :  timeSeries.getCols()[index].getfeatures())
-            {
+            for (Float num : timeSeries.getCols()[index].getFloats()) {
                 if (num < XML_settings.min.get(colname) || num > XML_settings.max.get(colname)) {
                     resultOpenCSV = "Incompatibility with XML file";
-                    flag1 = 1;
+                    openFlag = 1;
                 }
-                if (flag1 == 1)
+                if (openFlag == 1)
                     break;
             }
-            if (flag1 == 1)
+            if (openFlag == 1)
                 break;
         }
 
-        if (CSVindexmap.size() != 11)
+        if (CSVindexmap.size() != 10)
             resultOpenCSV = "Missing Arguments";
-        if (CSVindexmap.size() == 11 && flag1 == 0)
-        {
+        if (CSVindexmap.size() == 10 && openFlag == 0) {
             resultOpenCSV = "OK";
-            for (String colName : XML_settings.RealToAssosicate.keySet())
-            {
-                if (colName == "slip-skid-ball_indicated-slip-skid" || colName == "pitch-deg" || colName == "roll-deg" || colName == "altimeter_indicated-altitude-ft" || colName == "indicated-heading-deg" || colName == "airspeed-kt")
-                    colsNames.add(colName);
+            for (TimeSeries.col col : timeSeries.getCols()) {
+                colsNames.add(col.getName());
             }
             CSVpath = chosenPath;
             try {
                 fg = new Socket("localhost", 5400);
             } catch (IOException e) {
-                e.printStackTrace();
             }
 
             in = new TimeSeries(Model.CSVpath);
+            flightLong = in.getCols()[0].getFloats().size() + 1;
 
             try {
-                out = new PrintWriter(fg.getOutputStream());
+                if (fg != null)
+                    out = new PrintWriter(fg.getOutputStream());
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         setChanged();
         notifyObservers("resultOpenCSV");
     }
 
-    public void modelPlay()
+    public void resume(Thread simulatorThread, Thread timerThread)
     {
-        if (flag == 0) {
+        if (simulatorThread != null)
+        {
+            simulatorThread.resume();
+            timerThread.resume();
+        }
+    }
+
+    public void modelPlay() {
+        if (playFlag == 0) {
             simulator10Thread = new Thread(() -> {
                 simulatorLoop(1);
             });
@@ -155,85 +298,115 @@ public class Model extends Observable
                 timerLoop(1);
             });
             timer10Thread.start();
-
         }
-        if (flag == 1)
+        if (playFlag == 1)
         {
-            if (simulatorThread != null) {
-                simulatorThread.resume();
-                timerThread.resume();
-            }
-            if (simulator20Thread != null) {
-                simulator20Thread.resume();
-                timer20Thread.resume();
-            }
-            if (simulator05Thread != null) {
-                simulator05Thread.resume();
-                timer05Thread.resume();
-            }
-            if (simulator15Thread != null) {
-                simulator15Thread.resume();
-                timer15Thread.resume();
-            }
-            if (simulator10Thread != null) {
-                simulator10Thread.resume();
-                timer10Thread.resume();
-            }
+            resume(simulator10Thread, timer10Thread);
+            resume(simulator20Thread, timer20Thread);
+            resume(simulator15Thread, timer15Thread);
+            resume(simulator05Thread, timer05Thread);
+
+            playFlag = 0;
         }
     }
 
-    public void changeSpeed (double speed)
-    {
+    public void changeSpeed(double speed) {
         try {
-            Thread.sleep((long)(Model.XML_settings.additionalSettings.getSampleRate() / speed));
+            Thread.sleep((long) (Model.XML_settings.additionalSettings.getSampleRate() / speed));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void changeTimerSpeed (double speed)
-    {
+    public void changeTimerSpeed(double speed) {
         nowTime += 1000 * speed;
     }
 
-    int numofrow = 0;
-
-    public float getAileronstep() {
-        return aileronstep;
-    }
-
-    public float getElevatorstep() {
-        return elevatorstep;
-    }
-
-    private float aileronstep;
-    private float elevatorstep;
-
-    public void simulatorLoop (double speed)
+    public void allChanges()
     {
-        while (numofrow != in.getCols().length - 1)
+        rudderstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("rudder"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("rudder");
+
+        throttlestep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("throttle"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("throttle");
+
+        altimeterstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("altimeter_indicated-altitude-ft"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("altimeter");
+
+        airspeedstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("airspeed-indicator_indicated-speed-kt"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("airspeed");
+
+        directionstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("indicated-heading-deg"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("direction");
+
+        pitchstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("attitude-indicator_internal-pitch-deg"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("pitch");
+
+        rollstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("attitude-indicator_indicated-roll-deg"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("roll");
+
+        yawstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("side-slip-deg"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("yaw");
+
+        aileronstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("aileron"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("aileron");
+
+        elevatorstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("elevator"))].getFloats().get(numofrow);
+        setChanged();
+        notifyObservers("elevator");
+
+        for (int i = 0; i < reports.size(); i++)
         {
-            out.println(in.getCols()[numofrow]);
-            out.flush();
-            aileronstep = in.getCols()[CSVindexmap.get("aileron")].getfeatures().get(numofrow);
-            setChanged();
-            notifyObservers("aileron");
-            elevatorstep = in.getCols()[CSVindexmap.get("elevator")].getfeatures().get(numofrow);
-            setChanged();
-            notifyObservers("elevator");
+            if (reports.get(i).timeStep == numofrow && reports.get(i).description.contains(nameOfCol))
+            {
+                setChanged();
+                notifyObservers("report");
+                saveI = i;
+                break;
+            }
+            else
+            {
+                if (saveI == i - 1) {
+                    setChanged();
+                    notifyObservers("reportDone");
+                }
+            }
+        }
+    }
+
+    public void simulatorLoop(double speed) {
+        while (numofrow < in.getRows().size() - 2) {
+            if (out != null) {
+                out.println(in.getRows().get(numofrow));
+                out.flush();
+            }
+
+            allChanges();
+
             changeSpeed(speed);
             numofrow++;
+            setChanged();
+            notifyObservers("numofrow");
         }
-        out.close();
+        modelStop();
+        if (out != null)
+            out.close();
         try {
             fg.close();
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    public void timerLoop (double speed)
-    {
+    public void timerLoop(double speed) {
         while (true) {
             try {
                 Thread.sleep(1000); //1 second
@@ -241,32 +414,39 @@ public class Model extends Observable
                 e.printStackTrace();
             }
             changeTimerSpeed(speed);
-            time = simpleDateFormat.format(nowTime - 7200000);
-            Platform.runLater(() -> {
+
+            if (nowTime >= ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getSampleRate() / 10)) * 1000 - 1000)
+            {
+                nowTime = ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getSampleRate() / 10)) * 1000 - 1000;
+                time = simpleDateFormat.format(nowTime - 7200000);
                 setChanged();
                 notifyObservers("time");
-            });
+                break;
+            }
+
+            time = simpleDateFormat.format(nowTime - 7200000);
+            setChanged();
+            notifyObservers("time");
         }
     }
 
-    public void modelGetChoice(String speed)
+    public void suspendForPlay(Thread simulatorThread, Thread timerThread)
     {
+        if (simulatorThread != null) {
+            simulatorThread.suspend();
+            timerThread.suspend();
+        }
+    }
+
+    public void modelGetChoice(String speed) {
         if (speed.intern() == "x2.0") {
-            if (simulator05Thread != null) {
-                simulator05Thread.suspend();
-                timer05Thread.suspend();
-                simulator05Thread = null;
-            }
-            if (simulator10Thread != null) {
-                simulator10Thread.suspend();
-                timer10Thread.suspend();
-                simulator10Thread = null;
-            }
-            if (simulator15Thread != null) {
-                simulator15Thread.suspend();
-                timer15Thread.suspend();
-                simulator15Thread = null;
-            }
+            suspendForPlay(simulator05Thread, timer05Thread);
+            suspendForPlay(simulator10Thread, timer10Thread);
+            suspendForPlay(simulator15Thread, timer15Thread);
+            simulator05Thread = null;
+            simulator10Thread = null;
+            simulator15Thread = null;
+
             simulator20Thread = new Thread(() ->
             {
                 simulatorLoop(2);
@@ -279,23 +459,13 @@ public class Model extends Observable
             timer20Thread.start();
         }
 
-        if (speed.intern() == "x0.5")
-        {
-            if (simulator20Thread != null) {
-                simulator20Thread.suspend();
-                timer20Thread.suspend();
-                simulator20Thread = null;
-            }
-            if (simulator10Thread != null) {
-                simulator10Thread.suspend();
-                timer10Thread.suspend();
-                simulator10Thread = null;
-            }
-            if (simulator15Thread != null) {
-                simulator15Thread.suspend();
-                timer15Thread.suspend();
-                simulator15Thread = null;
-            }
+        if (speed.intern() == "x0.5") {
+            suspendForPlay(simulator10Thread, timer10Thread);
+            suspendForPlay(simulator15Thread, timer15Thread);
+            suspendForPlay(simulator20Thread, timer20Thread);
+            simulator10Thread = null;
+            simulator15Thread = null;
+            simulator20Thread = null;
             simulator05Thread = new Thread(() ->
             {
                 simulatorLoop(0.5);
@@ -308,45 +478,25 @@ public class Model extends Observable
             timer05Thread.start();
         }
 
-        if (speed.intern() == "x1.0")
-        {
+        if (speed.intern() == "x1.0") {
             if (simulator15Thread != null || simulator20Thread != null || simulator05Thread != null) {
-                if (simulator05Thread != null) {
-                    simulator05Thread.suspend();
-                    timer05Thread.suspend();
-                    simulator05Thread = null;
-                }
-                if (simulator20Thread != null) {
-                    simulator20Thread.suspend();
-                    timer20Thread.suspend();
-                    simulator20Thread = null;
-                }
-                if (simulator15Thread != null) {
-                    simulator15Thread.suspend();
-                    timer15Thread.suspend();
-                    simulator15Thread = null;
-                }
+                suspendForPlay(simulator05Thread, timer05Thread);
+                suspendForPlay(simulator15Thread, timer15Thread);
+                suspendForPlay(simulator20Thread, timer20Thread);
+                simulator05Thread = null;
+                simulator15Thread = null;
+                simulator20Thread = null;
                 modelPlay();
             }
         }
 
-        if (speed.intern() == "x1.5")
-        {
-            if (simulator05Thread != null) {
-                simulator05Thread.suspend();
-                timer05Thread.suspend();
-                simulator05Thread = null;
-            }
-            if (simulator10Thread != null) {
-                simulator10Thread.suspend();
-                timer10Thread.suspend();
-                simulator10Thread = null;
-            }
-            if (simulator20Thread != null) {
-                simulator20Thread.suspend();
-                timer20Thread.suspend();
-                simulator20Thread = null;
-            }
+        if (speed.intern() == "x1.5") {
+            suspendForPlay(simulator05Thread, timer05Thread);
+            suspendForPlay(simulator10Thread, timer10Thread);
+            suspendForPlay(simulator20Thread, timer20Thread);
+            simulator05Thread = null;
+            simulator10Thread = null;
+            simulator20Thread = null;
             simulator15Thread = new Thread(() ->
             {
                 simulatorLoop(1.5);
@@ -360,76 +510,199 @@ public class Model extends Observable
         }
     }
 
+    public void suspendForPause(Thread simulatorThread, Thread timerThread)
+    {
+        if (simulatorThread != null)
+        {
+            simulatorThread.suspend();
+            timerThread.suspend();
+        }
+    }
+
     public void modelpause()
     {
-        flag = 1;
-        if (simulator10Thread != null) {
-            simulator10Thread.suspend();
-            timer10Thread.suspend();
-        }
-        else if (simulator15Thread != null) {
-            simulator15Thread.suspend();
-            timer15Thread.suspend();
-        }
-        else if (simulator05Thread != null) {
-            simulator05Thread.suspend();
-            timer05Thread.suspend();
-        }
-        else if (simulator20Thread != null) {
-            simulator20Thread.suspend();
-            timer20Thread.suspend();
-        }
+        suspendForPause(simulator05Thread, timer05Thread);
+        suspendForPause(simulator10Thread, timer10Thread);
+        suspendForPause(simulator15Thread, timer15Thread);
+        suspendForPause(simulator20Thread, timer20Thread);
+
+        playFlag = 1;
     }
 
-    public void modelPlus15()
-    {
-        Plus_Minus_Time (15, "+");
+    public void modelPlus15() {
+        Plus_Minus_Time(15, "+");
     }
 
-    public void modelMinus15()
-    {
-        Plus_Minus_Time (15, "-");
+    public void modelMinus15() {
+        Plus_Minus_Time(15, "-");
     }
 
-    public void modelMinus30()
-    {
-        Plus_Minus_Time (30, "-");
+    public void modelMinus30() {
+        Plus_Minus_Time(30, "-");
     }
 
-    public void modelPlus30()
-    {
-        Plus_Minus_Time (30, "+");
+    public void modelPlus30() {
+        Plus_Minus_Time(30, "+");
     }
 
-    public void Plus_Minus_Time (int seconds, String math)
-    {
+    public void Plus_Minus_Time(int seconds, String math) {
         if (math.intern() == "+") {
             numofrow += (XML_settings.additionalSettings.getSampleRate() / 10) * seconds;
             nowTime += seconds * 1000;
-        }
-        else
-        {
+        } else {
             numofrow -= (XML_settings.additionalSettings.getSampleRate() / 10) * seconds;
             nowTime -= seconds * 1000;
         }
     }
 
-    public double modelSetMinAileron()
-    {
-        return XML_settings.min.get("aileron");
+    public double modelSetMinRudder() {
+        return XML_settings.min.get("rudder");
     }
 
-    public double modelSetMaxAileron() {
-        return XML_settings.max.get("aileron");
+    public double modelSetMaxRudder() {
+        return XML_settings.max.get("rudder");
     }
 
-    public double modelSetMinElevator()
-    {
-        return XML_settings.min.get("elevator");
+    public double modelSetMinThrottle() {
+        return XML_settings.min.get("throttle");
     }
 
-    public double modelSetMaxElevator()
+    public double modelSetMaxThrottle() {
+        return XML_settings.max.get("throttle");
+    }
+
+    public double modelSetMaxTimeSlider() {
+        return ((double)(in.getCols()[0].getFloats().size() + 1) / (double)(XML_settings.additionalSettings.getSampleRate() / 10)) - 1;
+    }
+
+    public void modelTimeSlider(double second) {
+        numofrow = (int) (second * (XML_settings.additionalSettings.getSampleRate() / 10));
+        nowTime = (long) (second * 1000);
+    }
+
+    public void modelStop()
     {
-        return XML_settings.max.get("elevator");
+        numofrow = 0;
+        nowTime = 0;
+        modelpause();
+        simulator10Thread = null;
+        simulator05Thread = null;
+        simulator15Thread = null;
+        simulator20Thread = null;
+        playFlag = 0;
+    }
+
+    public void modelSetLeftLineChart(String colName)
+    {
+        nameOfCol = colName;
+    }
+
+    public void modelSetRightLineChart(String colName)
+    {
+        List<CorrelatedFeatures> list = linearRegression.getNormalModel();
+        for (CorrelatedFeatures features : list) {
+            if (features.feature1.intern() == colName.intern())
+                nameOfCoralatedCol = features.feature2;
+        }
+    }
+
+    public void modelSetAlgorithmLineChart(String colName)
+    {
+        if (realHybrid == 1)
+            className = "class Model.Hybrid";
+        reports = ad.detect(in);
+        modelSetRightLineChart(colName);
+        algorithmColValues.clear();
+        algorithmCoralatedColValues.clear();
+        anomalyAlgorithmColValues.clear();
+        anomalyAlgorithmCoralatedColValues.clear();
+
+        for (float value : regularFlight.getCols()[regularFlight.getColIndex(colName)].getFloats()) {
+            algorithmColValues.add(value);
+            if (minColValue > value)
+                minColValue = (int) value;
+            if (maxColValue < value)
+                maxColValue = (int) value;
+        }
+
+        for (float value : regularFlight.getCols()[regularFlight.getColIndex(nameOfCoralatedCol)].getFloats()) {
+            algorithmCoralatedColValues.add(value);
+        }
+
+        if (className.intern() == "class Model.Hybrid")
+        {
+            realHybrid = 1;
+            if (hybrid.whichAlgorithm.get(colName).intern() == "LinearRegression") {
+                className = "class Model.LinearRegression";
+            }
+            if (hybrid.whichAlgorithm.get(colName).intern() == "ZScore") {
+                className = "class Model.ZScore";
+            }
+            if (hybrid.whichAlgorithm.get(colName).intern() == "Hybrid") {
+                for (float value :in.getCols()[in.getColIndex(colName)].getFloats()) {
+                    anomalyAlgorithmColValues.add(value);
+                }
+
+                for (float value : in.getCols()[in.getColIndex(nameOfCoralatedCol)].getFloats()) {
+                    anomalyAlgorithmCoralatedColValues.add(value);
+                }
+
+                algorithmCircle = hybrid.whoCircle.get(colName);
+            }
+        }
+
+        if (className.intern() == "class Model.LinearRegression") {
+            for (float value :in.getCols()[in.getColIndex(colName)].getFloats()) {
+                anomalyAlgorithmColValues.add(value);
+            }
+
+            for (float value : in.getCols()[in.getColIndex(nameOfCoralatedCol)].getFloats()) {
+                anomalyAlgorithmCoralatedColValues.add(value);
+            }
+            List<CorrelatedFeatures> list = linearRegression.getNormalModel();
+            for (CorrelatedFeatures features : list) {
+                if (features.feature1.intern() == colName.intern() && features.feature2.intern() == nameOfCoralatedCol.intern()) {
+                    algorithmLine = features.lin_reg;
+                    break;
+                }
+            }
+        }
+
+        if (className.intern() == "class Model.ZScore")
+        {
+            ZScoreLine = zScore.colZscores.get(regularFlight.getColIndex(colName));
+        }
+
+    }
+
+    public void modelLoadAlgorithm(String resultClassDirectory, String resultClassName)
+    {
+        URL[] urls = new URL[1];
+        try {
+            urls[0] = new URL("file://" + resultClassDirectory);
+            URLClassLoader classLoader = new URLClassLoader(urls);
+            Class<?> classInstance = null;
+            classInstance = classLoader.loadClass(resultClassName);
+            ad = (TimeSeriesAnomalyDetector) classInstance.newInstance();
+            resultLoadAlgorithm = "success";
+            setChanged();
+            notifyObservers("resultLoadAlgorithm");
+            className =  ad.getClass().toString();
+            ad.learnNormal(regularFlight);
+            realHybrid = 0;
+        } catch (IllegalAccessException | ClassNotFoundException e) {
+            resultLoadAlgorithm = "failed";
+            setChanged();
+            notifyObservers("resultLoadAlgorithm");
+        } catch (MalformedURLException e) {
+            resultLoadAlgorithm = "failed";
+            setChanged();
+            notifyObservers("resultLoadAlgorithm");
+        } catch (InstantiationException e) {
+            resultLoadAlgorithm = "failed";
+            setChanged();
+            notifyObservers("resultLoadAlgorithm");
+        }
     }
 }
+

@@ -3,170 +3,83 @@ package Algorithms;
 
 import Server.*;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class hybrid implements TimeSeriesAnomalyDetector {
 
-
-
     public ArrayList<Circle> circles = new ArrayList<>();
-    public ArrayList<AnomalyReport> detections = new ArrayList<>();
+    public Map<String, String> whichAlgorithm = new HashMap<>();
+    public ArrayList<CorrelatedFeatures> theCorrelatedFeatures = new ArrayList<>();
+    public Map<String, Circle> whoCircle = new HashMap<>();
 
 
-    public List<AnomalyReport> HybridAlgorithm(TimeSeries timeSeries1, TimeSeries timeSeries2) {
+    public void HybridAlgorithm(TimeSeries timeSeries) {
 
-        //linearReg
-        int flag;
         linearRegresion linearReg = new linearRegresion();
-        timeSeries1.setCorrelationTresh(0.95);
-        linearReg.learnNormal(timeSeries1);
-        List <AnomalyReport> linearReg_detect = linearReg.detect(timeSeries2);
-        for (AnomalyReport report :linearReg_detect)
+        timeSeries.setCorrelationTresh(0.95);
+        linearReg.learnNormal(timeSeries);
+        List<CorrelatedFeatures> correlatedFeatures = linearReg.getNormalModel();
+        for (CorrelatedFeatures features: correlatedFeatures)
         {
-            detections.add(report);
+            whichAlgorithm.put(features.feature1, "LinearRegression");
+            whichAlgorithm.put(features.feature2, "LinearRegression");
         }
 
-
-        //Hybrid
         linearRegresion linearReg_hybrid = new linearRegresion();
-        timeSeries1.setCorrelationTresh(0);
-        linearReg_hybrid.learnNormal(timeSeries1);
-        List <CorrelatedFeatures> f = linearReg_hybrid.getNormalModel();
-        List <CorrelatedFeatures> temp = new ArrayList<CorrelatedFeatures>();
-        for (CorrelatedFeatures feature : f)
+        timeSeries.setCorrelationTresh(0.5);
+        linearReg_hybrid.learnNormal(timeSeries);
+        List<CorrelatedFeatures> correlatedFeatures1 = linearReg_hybrid.getNormalModel();
+        for (CorrelatedFeatures features: correlatedFeatures1)
         {
-            temp.add(feature);
-        }
-        f.clear();
-        for (CorrelatedFeatures feature : temp)
-        {
-            if (Math.abs(feature.corrlation) >= 0.5)
-                f.add(feature);
-        }
-
-        this.learnNormal(timeSeries1);
-        List <AnomalyReport> Hybrid_detect = this.detect(timeSeries2);
-        for (AnomalyReport report :Hybrid_detect)
-        {
-            flag = 0;
-            for (AnomalyReport detection: detections)
-            {
-                String[] arr = detection.description.split("-");
-                if (report.description.contains(arr[0]) || report.description.contains(arr[1]))
-                    flag = 1;
+            if (!whichAlgorithm.containsKey(features.feature1)) {
+                whichAlgorithm.put(features.feature1, "Hybrid");
+                theCorrelatedFeatures.add(features);
             }
-            if (flag == 0)
-                detections.add(report);
         }
 
-        //Zscore
-        ZScore zScore = new ZScore(timeSeries1);
-        zScore.learnNormal(timeSeries1);
-        for (AnomalyReport report :zScore.detect(timeSeries2))
+        for (TimeSeries.col col :timeSeries.getCols())
         {
-            flag = 0;
-            for (AnomalyReport detection: detections)
-            {
-                if (detection.description.contains(report.description))
-                    flag = 1;
-            }
-            if (flag == 0)
-                detections.add(report);
+            if (!whichAlgorithm.containsKey(col.getName()))
+                whichAlgorithm.put(col.getName(), "ZScore");
         }
-        return detections;
-
     }
 
     @Override
-    public void learnNormal(TimeSeries timeSeries)
-    {
-        String[] str = new String[timeSeries.getCols().length];
-
-        for (int i = 0; i < timeSeries.getCols().length; i++)
-            str[i] = timeSeries.getCols()[i].getName();
-
-        for (int i = 0; i < str.length; i++) {
-            ArrayList<Float> column_i = timeSeries.getCols()[i].getfeatures();
-
-            for (int j = i + 1; j < str.length; j++) {
-
-                if (str[i] != str[j])
-                {
-                    ArrayList<Float> column_j = timeSeries.getCols()[j].getfeatures();
-                    Vector<Point> pointsVector = new Vector<Point>();
-                    for (int t = 0; t < timeSeries.getCols()[j].getfeatures().size(); t++)
-                    {
-                        pointsVector.add(new Point(column_i.get(t), column_j.get(t)));
-                    }
-                    Circle circle = SmallestEnclosingCircle.makeCircle(pointsVector);
-                    circles.add(circle);
-                }
-
-
+    public void learnNormal(TimeSeries timeSeries) {
+        for (CorrelatedFeatures features: theCorrelatedFeatures)
+        {
+            ArrayList<Float> column_i = timeSeries.getCols()[timeSeries.getColIndex(features.feature1)].getFloats();
+            ArrayList<Float> column_j = timeSeries.getCols()[timeSeries.getColIndex(features.feature2)].getFloats();
+            Vector<Point> pointsVector = new Vector<>();
+            for (int t = 0; t < timeSeries.getCols()[0].getFloats().size(); t++) {
+                pointsVector.add(new Point(column_i.get(t), column_j.get(t)));
             }
+            Circle circle = SmallestEnclosingCircle.makeCircle(pointsVector);
+            whoCircle.put(features.feature1, circle);
+            circles.add(circle);
         }
     }
 
     @Override
     public List<AnomalyReport> detect(TimeSeries timeSeries) {
         List<AnomalyReport> anomalyReports = new ArrayList<AnomalyReport>();
-        String[] str = new String[timeSeries.getCols().length];
-
-        for (int i = 0; i < timeSeries.getCols().length; i++)
-            str[i] = timeSeries.getCols()[i].getName();
-
-        int index = 0;
         int k = 0;
-        for (int i = 0; i < str.length; i++) {
-            ArrayList<Float> column_i = timeSeries.getCols()[i].getfeatures();
 
-            for (int j = i + 1; j < str.length; j++)
-            {
-
-                if (str[i] != str[j]) {
-                    ArrayList<Float> column_j = timeSeries.getCols()[j].getfeatures();
-                    Vector<Point> pointsVector = new Vector<Point>();
-                    for (int t = 0; t < timeSeries.getCols()[j].getfeatures().size(); t++)
-                    {
-                        pointsVector.add(new Point(column_i.get(t), column_j.get(t)));
-                    }
-
-                    for (int h = 0; h < pointsVector.size(); h++)
-                    {
-
-                        if (!circles.get(k).contains(pointsVector.get(h)))
-                        {
-                            anomalyReports.add(new AnomalyReport(str[i] + "-" + str[j], h + 1));
-                        }
-                    }
-
-                }
-                k++;
+        for (CorrelatedFeatures features: theCorrelatedFeatures)
+        {
+            ArrayList<Float> column_i = timeSeries.getCols()[timeSeries.getColIndex(features.feature1)].getFloats();
+            ArrayList<Float> column_j = timeSeries.getCols()[timeSeries.getColIndex(features.feature2)].getFloats();
+            Vector<Point> pointsVector = new Vector<>();
+            for (int t = 0; t < timeSeries.getCols()[0].getFloats().size(); t++) {
+                pointsVector.add(new Point(column_i.get(t), column_j.get(t)));
             }
-
+            for (int h = 0; h < pointsVector.size(); h++) {
+                if (!circles.get(k).contains(pointsVector.get(h))) {
+                    anomalyReports.add(new AnomalyReport(features.feature1 + "-" + features.feature2, h));
+                }
+            }
+            k++;
         }
-
         return anomalyReports;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
