@@ -2,10 +2,10 @@ package Server;
 
 import javafx.scene.control.ListView;
 
+import javax.swing.*;
 import java.beans.XMLDecoder;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.beans.XMLEncoder;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +25,9 @@ public class XMLHandler {
 
 
 
-    public void getSettingsFromXML(String path)
-    {
+    public void getSettingsFromXML(String path) throws FileNotFoundException {
         XMLDecoder decoder = null;
+
         try {
             decoder = new XMLDecoder(
                     new BufferedInputStream(new FileInputStream(path)));
@@ -91,6 +91,10 @@ public class XMLHandler {
             min.put(userSettings.getRealColName(), userSettings.getMin());
         }
         decoder.close();
+
+
+
+
     }
 
 

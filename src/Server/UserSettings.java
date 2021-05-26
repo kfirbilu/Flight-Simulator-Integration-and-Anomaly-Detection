@@ -1,5 +1,6 @@
 package Server;
 
+import java.beans.XMLEncoder;
 import java.io.Serializable;
 
 public class UserSettings implements Serializable {
@@ -47,6 +48,7 @@ public class UserSettings implements Serializable {
     public void setMin(int min) {
         this.min = min;
     }
+
 
 
 
