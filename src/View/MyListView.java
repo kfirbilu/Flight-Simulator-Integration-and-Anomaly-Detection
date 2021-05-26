@@ -23,7 +23,7 @@ public class MyListView extends Pane {
         listView.setLayoutX(25);
         ret.add(listView);
 
-        open = new Button("Open");
+        open = new Button("Open CSV File");
         open.setLayoutX(25);
         open.setLayoutY(410);
         open.setPrefSize(163, 42);

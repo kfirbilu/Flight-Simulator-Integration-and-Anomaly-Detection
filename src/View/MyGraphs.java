@@ -46,7 +46,7 @@ public class MyGraphs extends Pane
         leftLineChart.getData().add(leftSeries);
         leftxAxis.setTickLabelsVisible(false);
         leftyAxis.setTickLabelsVisible(false);
-        leftSeries.setName("parameter values");
+        leftSeries.setName("Parameter Values");
         setLineToBlack(leftLineChart, leftSeries);
         Platform.runLater(() -> leftLineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: WHITE;"));
         ret.add(leftLineChart);
@@ -58,7 +58,7 @@ public class MyGraphs extends Pane
         rightLineChart.getData().add(rightSeries);
         rightxAxis.setTickLabelsVisible(false);
         rightyAxis.setTickLabelsVisible(false);
-        rightSeries.setName("correlated parameter values");
+        rightSeries.setName("Correlated parameter values");
         setLineToBlack(rightLineChart, rightSeries);
         Platform.runLater(() -> rightLineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: WHITE;"));
         ret.add(rightLineChart);
@@ -89,9 +89,9 @@ public class MyGraphs extends Pane
         algorithmyAxis.setTickLabelsVisible(false);
         algorithmLineChart.setAnimated(false);
         algorithmLineChart.setCreateSymbols(true);
-        algorithmSeries.setName("algorithm line");
-        algorithmSeries1.setName("regular flight");
-        algorithmSeries2.setName("anomaly flight");
+        algorithmSeries.setName("Algorithm line");
+        algorithmSeries1.setName("Regular flight");
+        algorithmSeries2.setName("Anomaly flight");
         algorithmSeries3.setName("");
         Platform.runLater(() -> algorithmLineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: WHITE;"));
         ret.add(algorithmLineChart);
