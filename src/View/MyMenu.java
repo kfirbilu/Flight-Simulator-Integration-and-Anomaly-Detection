@@ -16,7 +16,7 @@ public class MyMenu extends Pane {
 
     public MenuBar set() {
 
-        menu = new Menu("Settings");
+        menu = new Menu("Menu");
         loadXML = new MenuItem("Load XML file");
         loadAlgorithm = new MenuItem("Load Algorithm class");
         menu.getItems().addAll(loadXML,loadAlgorithm);

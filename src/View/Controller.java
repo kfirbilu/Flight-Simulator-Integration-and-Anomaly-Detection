@@ -52,7 +52,9 @@ public class Controller extends Pane implements Observer, Initializable {
         myMenu.loadAlgorithm.setOnAction((e) -> loadAlgorithm());
 
         board.getChildren().addAll(myListView.set());
-        myListView.open.setOnAction((e) -> openCSV());
+        myListView.openCsv.setOnAction((e) -> openCSV()); ////// was open
+        myListView.openAlgo.setOnAction((e) -> loadAlgorithm());  ///// added
+        myListView.openXML.setOnAction((e) -> LoadXML()); ///// added
         myListView.listView.setOnMouseClicked((e) -> setLineCharts((String)myListView.listView.getSelectionModel().getSelectedItem()));
 
         board.getChildren().addAll(myButtons.set());
@@ -100,6 +102,7 @@ public class Controller extends Pane implements Observer, Initializable {
     DoubleProperty minThrottle;
     DoubleProperty maxThrottle;
     DoubleProperty maxtimeSlider;
+
 
     FloatProperty rudderstep;
     FloatProperty throttlestep;

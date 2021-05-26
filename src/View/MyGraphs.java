@@ -51,7 +51,7 @@ public class MyGraphs extends Pane
         Platform.runLater(() -> leftLineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: WHITE;"));
         ret.add(leftLineChart);
 
-        rightLineChart.setLayoutX(380);
+        rightLineChart.setLayoutX(380); //was 380
         rightLineChart.setLayoutY(27);
         rightLineChart.setPrefSize(220,190);
         rightLineChart.setCreateSymbols(false);
@@ -63,7 +63,7 @@ public class MyGraphs extends Pane
         Platform.runLater(() -> rightLineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: WHITE;"));
         ret.add(rightLineChart);
 
-        algorithmLineChart.setLayoutX(180);
+        algorithmLineChart.setLayoutX(180); //was 180
         algorithmLineChart.setLayoutY(205);
         algorithmLineChart.setPrefSize(420,260);
         algorithmLineChart.getData().add(algorithmSeries);
