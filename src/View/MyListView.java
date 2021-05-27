@@ -31,8 +31,6 @@ public class MyListView extends Pane {
         openCsv.setPrefSize(85, 25);
         ret.add(openCsv);
 
-
-
         openXML = new Button("Open XML");
         openXML.setLayoutX(100);
         openXML.setLayoutY(410);
@@ -44,10 +42,6 @@ public class MyListView extends Pane {
         openAlgo.setLayoutY(440);
         openAlgo.setPrefSize(175, 25);
         ret.add(openAlgo);
-
-
-
-
 
         return ret;
     }

@@ -55,6 +55,7 @@ public class Controller extends Pane implements Observer, Initializable {
         myListView.openCsv.setOnAction((e) -> openCSV()); ////// was open
         myListView.openAlgo.setOnAction((e) -> loadAlgorithm());  ///// added
         myListView.openXML.setOnAction((e) -> LoadXML()); ///// added
+        myMenu.exit.setOnAction((e)->exitProgram());
         myListView.listView.setOnMouseClicked((e) -> setLineCharts((String)myListView.listView.getSelectionModel().getSelectedItem()));
 
         board.getChildren().addAll(myButtons.set());
@@ -345,6 +346,10 @@ public class Controller extends Pane implements Observer, Initializable {
         }
     }
 
+    public void exitProgram(){
+        System.exit(0);
+    }
+
     public void Play() {
         if (playStart == 0) {
             myButtons.playSpeedDropDown.setValue("x1.0");
@@ -546,4 +551,7 @@ public class Controller extends Pane implements Observer, Initializable {
     @Override
     public void update(Observable o, Object arg) {
     }
+
+
+
 }
