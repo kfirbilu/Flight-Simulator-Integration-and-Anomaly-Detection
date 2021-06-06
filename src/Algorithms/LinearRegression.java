@@ -5,7 +5,7 @@ import Server.*;
 import java.util.*;
 
 
-public class linearRegresion implements TimeSeriesAnomalyDetector {
+public class LinearRegression implements TimeSeriesAnomalyDetector {
     private ArrayList<CorrelatedFeatures> arrCor = new ArrayList<CorrelatedFeatures>();
 
 

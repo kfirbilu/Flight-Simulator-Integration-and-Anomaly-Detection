@@ -12,123 +12,123 @@ import java.io.*;
 @SuppressWarnings("rawtypes")
 public class TimeSeries {
 
-	public class col {
+    public class col {
 
-		private String name;
+        private String name;
 
-		private ArrayList<Float> floats;
+        private ArrayList<Float> floats;
 
-		public col(String name) {
-			this.name = name;
-			this.floats = new ArrayList<Float>();
-		}
+        public col(String name) {
+            this.name = name;
+            this.floats = new ArrayList<Float>();
+        }
 
-		public String getName() {
-			return name;
-		}
+        public String getName() {
+            return name;
+        }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+        public void setName(String name) {
+            this.name = name;
+        }
 
-		public ArrayList<Float> getFloats() {
-			return floats;
-		}
+        public ArrayList<Float> getFloats() {
+            return floats;
+        }
 
-	}
+    }
 
-	private col[] cols;
+    private col[] cols;
 
-	private ArrayList<String> rows = new ArrayList<>();
+    private ArrayList<String> rows = new ArrayList<>();
 
-	public double correlationTresh = 0.9;
+    public double correlationTresh = 0.9;
 
-	String myCSVname;
+    String myCSVname;
 
-	Path path_of_file;
+    Path path_of_file;
 
-	public void setCorrelationTresh(double correlationTresh) {
-		this.correlationTresh = correlationTresh;
-	}
+    public void setCorrelationTresh(double correlationTresh) {
+        this.correlationTresh = correlationTresh;
+    }
 
-	public col[] getCols() {
-		return cols;
-	}
+    public col[] getCols() {
+        return cols;
+    }
 
-	public ArrayList<String> getRows() {
-		return rows;
-	}
+    public ArrayList<String> getRows() {
+        return rows;
+    }
 
-	public TimeSeries(String csvFileName) {
+    public TimeSeries(String csvFileName) {
 
-		this.myCSVname = csvFileName;
-		this.path_of_file = Paths.get(csvFileName);
+        this.myCSVname = csvFileName;
+        this.path_of_file = Paths.get(csvFileName);
 
-		try {
-			@SuppressWarnings("resource")
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(csvFileName));
+        try {
+            @SuppressWarnings("resource")
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(csvFileName));
 
-			bufferedReader = Files.newBufferedReader(path_of_file, StandardCharsets.US_ASCII);
+            bufferedReader = Files.newBufferedReader(path_of_file, StandardCharsets.US_ASCII);
 
-			String line = bufferedReader.readLine();
+            String line = bufferedReader.readLine();
 
-			String[] value = line.split(",");
+            String[] value = line.split(",");
 
-			cols = new col[value.length];
+            cols = new col[value.length];
 
-			for (int i = 0; i < value.length; i++)
-				cols[i] = new col(value[i]);
+            for (int i = 0; i < value.length; i++)
+                cols[i] = new col(value[i]);
 
-			line = bufferedReader.readLine();
-			rows.add(line);
+            line = bufferedReader.readLine();
+            rows.add(line);
 
-			while (line != null) {
+            while (line != null) {
 
-				value = line.split(",");
+                value = line.split(",");
 
-				for (int j = 0; j < value.length; j++)
-					cols[j].getFloats().add(Float.parseFloat(value[j]));
+                for (int j = 0; j < value.length; j++)
+                    cols[j].getFloats().add(Float.parseFloat(value[j]));
 
-				line = bufferedReader.readLine();
-				rows.add(line);
+                line = bufferedReader.readLine();
+                rows.add(line);
 
-			}
+            }
 
-			bufferedReader.close();
+            bufferedReader.close();
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public float[] ArrListToArr(ArrayList<Float> list) {
-		float[] f = new float[list.size()];
+    public float[] ArrListToArr(ArrayList<Float> list) {
+        float[] f = new float[list.size()];
 
-		for (int i = 0; i < list.size(); i++)
-			f[i] = list.get(i);
+        for (int i = 0; i < list.size(); i++)
+            f[i] = list.get(i);
 
-		return f;
+        return f;
 
-	}
+    }
 
-	public Point[] ArrToPoint(float[] x, float[] y) {
-		Point[] p = new Point[x.length];
+    public Point[] ArrToPoint(float[] x, float[] y) {
+        Point[] p = new Point[x.length];
 
-		for (int i = 0; i < x.length; i++)
-			p[i] = new Point(x[i], y[i]);
+        for (int i = 0; i < x.length; i++)
+            p[i] = new Point(x[i], y[i]);
 
-		return p;
+        return p;
 
-	}
+    }
 
-	public int getColIndex (String colName)
-	{
-		for (int i = 0; i < cols.length; i++)
-		{
-			if (cols[i].name.intern() == colName.intern())
-				return i;
-		}
-		return -1;
-	}
+    public int getColIndex (String colName)
+    {
+        for (int i = 0; i < cols.length; i++)
+        {
+            if (cols[i].name.intern() == colName.intern())
+                return i;
+        }
+        return -1;
+    }
 
 }

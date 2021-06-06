@@ -2,28 +2,27 @@ package Server;
 
 public class AdditionalSettings {
 
-    long sampleRate = 999999;
-
-    String csvFile;
-
+    long dataSamplingRate = (long) 1000000;
+    String properFlightFile;
     String algorithmFile;
 
-    public AdditionalSettings(){};
-
-    public long getSampleRate() {
-        return sampleRate;
+    public AdditionalSettings() {
     }
 
-    public void setSampleRate(long sampleRate) {
-        this.sampleRate = sampleRate;
+    public long getDataSamplingRate() {
+        return dataSamplingRate;
     }
 
-    public String getCsvFile() {
-        return csvFile;
+    public void setDataSamplingRate(long dataSamplingRate) {
+        this.dataSamplingRate = dataSamplingRate;
     }
 
-    public void setCsvFile(String csvFile) {
-        this.csvFile = csvFile;
+    public String getProperFlightFile() {
+        return properFlightFile;
+    }
+
+    public void setProperFlightFile(String properFlightFile) {
+        this.properFlightFile = properFlightFile;
     }
 
     public String getAlgorithmFile() {

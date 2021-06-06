@@ -1,36 +1,32 @@
 package Server;
 
-import java.beans.XMLEncoder;
 import java.io.Serializable;
 
 public class UserSettings implements Serializable {
 
-    private String colName;
-
-    private String realColName;
-
-    private int max = 999999;
-
-    private int min = -999999;
-
-
     public UserSettings() {
-    }  // default CTOR
-
-    public String getColName() {
-        return colName;
     }
 
-    public void setColName(String colName) {
-        this.colName = colName;
+    private String assosicateName;
+    private int max = 1000000;
+    private int min = -1000000;
+    private String realName;
+
+
+    public String getRealName() {
+        return realName;
     }
 
-    public String getRealColName() {
-        return realColName;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
-    public void setRealColName(String realColName) {
-        this.realColName = realColName;
+    public String getAssosicateName() {
+        return assosicateName;
+    }
+
+    public void setAssosicateName(String assosicateName) {
+        this.assosicateName = assosicateName;
     }
 
     public int getMax() {
@@ -48,8 +44,6 @@ public class UserSettings implements Serializable {
     public void setMin(int min) {
         this.min = min;
     }
-
-
 
 
 }

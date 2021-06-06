@@ -5,7 +5,7 @@ import Server.*;
 
 import java.util.*;
 
-public class hybrid implements TimeSeriesAnomalyDetector {
+public class Hybrid implements TimeSeriesAnomalyDetector {
 
     public ArrayList<Circle> circles = new ArrayList<>();
     public Map<String, String> whichAlgorithm = new HashMap<>();
@@ -15,7 +15,7 @@ public class hybrid implements TimeSeriesAnomalyDetector {
 
     public void HybridAlgorithm(TimeSeries timeSeries) {
 
-        linearRegresion linearReg = new linearRegresion();
+        LinearRegression linearReg = new LinearRegression();
         timeSeries.setCorrelationTresh(0.95);
         linearReg.learnNormal(timeSeries);
         List<CorrelatedFeatures> correlatedFeatures = linearReg.getNormalModel();
@@ -25,7 +25,7 @@ public class hybrid implements TimeSeriesAnomalyDetector {
             whichAlgorithm.put(features.feature2, "LinearRegression");
         }
 
-        linearRegresion linearReg_hybrid = new linearRegresion();
+        LinearRegression linearReg_hybrid = new LinearRegression();
         timeSeries.setCorrelationTresh(0.5);
         linearReg_hybrid.learnNormal(timeSeries);
         List<CorrelatedFeatures> correlatedFeatures1 = linearReg_hybrid.getNormalModel();
@@ -54,7 +54,7 @@ public class hybrid implements TimeSeriesAnomalyDetector {
             for (int t = 0; t < timeSeries.getCols()[0].getFloats().size(); t++) {
                 pointsVector.add(new Point(column_i.get(t), column_j.get(t)));
             }
-            Circle circle = SmallestEnclosingCircle.makeCircle(pointsVector);
+            Circle circle = Welzl.makeCircle(pointsVector);
             whoCircle.put(features.feature1, circle);
             circles.add(circle);
         }

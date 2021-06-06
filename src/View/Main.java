@@ -21,7 +21,6 @@ public class Main extends Application {
 
     public void start(Stage primaryStage) throws Exception {
 
-
         AllModels model = new Model();
         AllViewModels viewModel = new ViewModel((Model)model);
         model.addObserver(viewModel);

@@ -1,21 +1,15 @@
 package Algorithms;
+
+
+import Server.Circle;
 import Server.Point;
 
-
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-
-public final class SmallestEnclosingCircle {
-
-    /*
-     * Returns the smallest circle that encloses all the given points. Runs in expected O(n) time, randomized.
-     * Note: If 0 points are given, null is returned. If 1 point is given, a circle of radius 0 is returned.
-     */
+public final class Welzl {
 
     // Initially: No boundary points known
     public static Circle makeCircle(List<Point> points) {
@@ -53,12 +47,11 @@ public final class SmallestEnclosingCircle {
     // Two boundary points known
     private static Circle makeCircleTwoPoints(List<Point> points, Point p, Point q) {
         Circle circ = makeDiameter(p, q);
-        Circle left  = null;
+        Circle left = null;
         Circle right = null;
 
         // For each point not in the two-point circle
         Point pq = q.subtract(p);
-
         for (Point r : points) {
             if (circ.contains(r))
                 continue;
@@ -96,14 +89,14 @@ public final class SmallestEnclosingCircle {
         // Mathematical algorithm from Wikipedia: Circumscribed circle
         float ox = (Math.min(Math.min(a.x, b.x), c.x) + Math.max(Math.max(a.x, b.x), c.x)) / 2;
         float oy = (Math.min(Math.min(a.y, b.y), c.y) + Math.max(Math.max(a.y, b.y), c.y)) / 2;
-        float ax = a.x - ox,  ay = a.y - oy;
-        float bx = b.x - ox,  by = b.y - oy;
-        float cx = c.x - ox,  cy = c.y - oy;
+        float ax = a.x - ox, ay = a.y - oy;
+        float bx = b.x - ox, by = b.y - oy;
+        float cx = c.x - ox, cy = c.y - oy;
         float d = (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) * 2;
         if (d == 0)
             return null;
-        float x = ((ax*ax + ay*ay) * (by - cy) + (bx*bx + by*by) * (cy - ay) + (cx*cx + cy*cy) * (ay - by)) / d;
-        float y = ((ax*ax + ay*ay) * (cx - bx) + (bx*bx + by*by) * (ax - cx) + (cx*cx + cy*cy) * (bx - ax)) / d;
+        float x = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / d;
+        float y = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / d;
         Point p = new Point(ox + x, oy + y);
         float r = Math.max(Math.max(p.distance(a), p.distance(b)), p.distance(c));
         return new Circle(p, r);

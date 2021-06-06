@@ -11,20 +11,20 @@ public class MyMenu extends Pane {
 
     MenuItem loadXML;
     MenuItem loadAlgorithm;
-    MenuItem exit;
 
     MenuBar menuBar;
 
     public MenuBar set() {
-        menu = new Menu("File");
+
+        menu = new Menu("Settings");
         loadXML = new MenuItem("Load XML file");
         loadAlgorithm = new MenuItem("Load Algorithm class");
-        exit = new MenuItem("Exit");
-        menu.getItems().addAll(loadXML,loadAlgorithm,exit);
+        menu.getItems().addAll(loadXML,loadAlgorithm);
         menuBar = new MenuBar();
         menuBar.getMenus().add(menu);
         menuBar.setPrefHeight(25);
         menuBar.setPrefWidth(797);
+
         return menuBar;
     }
 }

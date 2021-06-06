@@ -30,57 +30,57 @@ public class MyButtons extends Pane {
 
         play = new Button("Play");
         play.setLayoutX(25);
-        play.setLayoutY(485); //was 470
+        play.setLayoutY(470);
         play.setPrefSize(74, 42);
         ret.add(play);
 
         pause = new Button("Pause");
         pause.setLayoutX(105);
-        pause.setLayoutY(485);
+        pause.setLayoutY(470);
         pause.setPrefSize(74, 42);
         ret.add(pause);
 
         stop = new Button("Stop");
         stop.setLayoutX(185);
-        stop.setLayoutY(485);
+        stop.setLayoutY(470);
         stop.setPrefSize(74, 42);
         ret.add(stop);
 
         minus30 = new Button("<<<");
         minus30.setLayoutX(265);
-        minus30.setLayoutY(485);
+        minus30.setLayoutY(470);
         minus30.setPrefSize(74, 42);
         ret.add(minus30);
 
         plus30 = new Button(">>>");
         plus30.setLayoutX(505);
-        plus30.setLayoutY(485);
+        plus30.setLayoutY(470);
         plus30.setPrefSize(74, 42);
         ret.add(plus30);
 
         minus15 = new Button("<<");
         minus15.setLayoutX(345);
-        minus15.setLayoutY(485);
+        minus15.setLayoutY(470);
         minus15.setPrefSize(74, 42);
         ret.add(minus15);
 
         plus15 = new Button(">>");
         plus15.setLayoutX(425);
-        plus15.setLayoutY(485);
+        plus15.setLayoutY(470);
         plus15.setPrefSize(74, 42);
         ret.add(plus15);
 
         Label playSpeed = new Label("Play Speed");
         playSpeed.setFont(new Font(20));
         playSpeed.setLayoutX(588);
-        playSpeed.setLayoutY(485);
+        playSpeed.setLayoutY(470);
         playSpeed.setPrefSize(105, 36);
         ret.add(playSpeed);
 
         playSpeedDropDown = new ChoiceBox();
         playSpeedDropDown.getItems().addAll("x0.5", "x1.0", "x1.5", "x2.0");
         playSpeedDropDown.setLayoutX(695);
-        playSpeedDropDown.setLayoutY(485);
+        playSpeedDropDown.setLayoutY(470);
         playSpeedDropDown.setPrefSize(67, 42);
         ret.add(playSpeedDropDown);
 

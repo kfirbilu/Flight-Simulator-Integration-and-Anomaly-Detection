@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_281" class="java.beans.XMLDecoder">
+
+     <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_aileron</string>
+      </void>
+      <void property="max">
+       <int>1</int>
+      </void>
+      <void property="min">
+       <int>-2</int>
+      </void>
+      <void property="realName">
+       <string>aileron</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_elevator</string>
+      </void>
+      <void property="max">
+       <int>1</int>
+      </void>
+      <void property="min">
+       <int>-2</int>
+      </void>
+      <void property="realName">
+       <string>elevator</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_rudder</string>
+      </void>
+      <void property="max">
+       <int>10000</int>
+      </void>
+      <void property="min">
+       <int>-10000</int>
+      </void>
+      <void property="realName">
+       <string>rudder</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_throttle</string>
+      </void>
+      <void property="max">
+       <int>1</int>
+      </void>
+      <void property="min">
+       <int>0</int>
+      </void>
+      <void property="realName">
+       <string>throttle</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_yow</string>
+      </void>
+      <void property="max">
+       <int>10000</int>
+      </void>
+      <void property="min">
+       <int>-10000</int>
+      </void>
+      <void property="realName">
+       <string>side-slip-deg</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_pitch</string>
+      </void>
+      <void property="max">
+       <int>10000</int>
+      </void>
+      <void property="min">
+       <int>-10000</int>
+      </void>
+      <void property="realName">
+       <string>attitude-indicator_internal-pitch-deg</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_roll</string>
+      </void>
+      <void property="max">
+       <int>10000</int>
+      </void>
+      <void property="min">
+       <int>-10000</int>
+      </void>
+      <void property="realName">
+       <string>attitude-indicator_indicated-roll-deg</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_altimeter</string>
+      </void>
+      <void property="max">
+       <int>10000</int>
+      </void>
+      <void property="min">
+       <int>-10000</int>
+      </void>
+      <void property="realName">
+       <string>altimeter_indicated-altitude-ft</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_direction</string>
+      </void>
+      <void property="max">
+       <int>10000</int>
+      </void>
+      <void property="min">
+       <int>-10000</int>
+      </void>
+      <void property="realName">
+       <string>indicated-heading-deg</string>
+      </void>
+     </object>
+	 
+	      <object class="Server.UserSettings">
+      <void property="assosicateName">
+       <string>_speed</string>
+      </void>
+      <void property="max">
+       <int>10000</int>
+      </void>
+      <void property="min">
+       <int>-10000</int>
+      </void>
+      <void property="realName">
+       <string>airspeed-indicator_indicated-speed-kt</string>
+      </void>
+     </object>
+	 
+	 
+	<object class="Server.AdditionalSettings">
+      <void property="dataSamplingRate">
+		<long>100</long>
+      </void>
+      <void property="properFlightFile">
+        <string>C:\\Users\\kfirb\\IdeaProjects\\ptm2\\files\\reg_flight (4).csv</string>
+      </void>
+      <void property="algorithmFile">
+         <string>desktop10000.www</string>
+      </void>
+     </object>
+	 
+
+</java>

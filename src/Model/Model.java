@@ -14,8 +14,8 @@ import java.util.*;
 
 public class Model extends AllModels {
 
-    static XMLHandler XML_settings;
-    static String CSVpath;
+    HandleXML XML_settings;
+    String CSVpath;
 
     Thread simulator20Thread = null;
     Thread timer20Thread = null;
@@ -74,9 +74,9 @@ public class Model extends AllModels {
 
     TimeSeriesAnomalyDetector ad;
     TimeSeries regularFlight;
-    linearRegresion linearRegression = new linearRegresion();
+    LinearRegression linearRegression = new LinearRegression();
     ZScore zScore = new ZScore();
-    hybrid hybrid = new hybrid();
+    Hybrid hybrid = new Hybrid();
     List<AnomalyReport> reports = new ArrayList<>();
 
     public String gettime() {
@@ -196,41 +196,78 @@ public class Model extends AllModels {
         return algorithmCircle;
     }
 
-
+    @Override
     public void ModelLoadXML(String chosenPath) {
-        XMLHandler handleXML = new XMLHandler();
+        HandleXML handleXML = new HandleXML();
         try {
-            handleXML.getSettingsFromXML(chosenPath);
+            handleXML.deserializeFromXML(chosenPath);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (handleXML.wrongFileFormat == true)
+        if (handleXML.WrongFormatAlert == true)
             resultLoadXML = "WrongFormatAlert";
-        else if (handleXML.missingArgument == true)
+        else if (handleXML.MissingArgumentsAlert == true)
             resultLoadXML = "MissingArgumentAlert";
         else {
             XML_settings = handleXML;
             resultLoadXML = "SuccessAlert";
-            regularFlight = new TimeSeries(XML_settings.additionalSettings.getCsvFile());
+            regularFlight = new TimeSeries(XML_settings.additionalSettings.getProperFlightFile());
+            regularFlight.setCorrelationTresh(0);
+            linearRegression.learnNormal(regularFlight);
+            zScore.learnNormal(regularFlight);
+            hybrid.HybridAlgorithm(regularFlight);
+            hybrid.learnNormal(regularFlight);
+            PrintWriter writer = null;
+            try {
+                writer = new PrintWriter(new FileWriter("lastXML.txt"));
+                writer.println(chosenPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            writer.close();
+        }
+        setChanged();
+        notifyObservers("resultLoadXML");
+    }
+
+    @Override
+    public void ModelOpenCSV(String chosenPath) {
+        //load the last XML
+        if (XML_settings == null)
+        {
+            String chosen = null;
+            Scanner scanner;
+            try {
+                scanner = new Scanner(new BufferedReader(new FileReader("lastXML.txt")));
+                chosen = scanner.nextLine();
+                scanner.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            HandleXML handleXML = new HandleXML();
+            handleXML.deserializeFromXML(chosen);
+            try {
+                handleXML.deserializeFromXML(chosen);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            XML_settings = handleXML;
+            regularFlight = new TimeSeries(XML_settings.additionalSettings.getProperFlightFile());
             regularFlight.setCorrelationTresh(0);
             linearRegression.learnNormal(regularFlight);
             zScore.learnNormal(regularFlight);
             hybrid.HybridAlgorithm(regularFlight);
             hybrid.learnNormal(regularFlight);
         }
-        setChanged();
-        notifyObservers("resultLoadXML");
-    }
 
-    public void ModelOpenCSV(String chosenPath) {
         int openFlag = 0;
         TimeSeries timeSeries = new TimeSeries(chosenPath);
         for (int i = 0; i < timeSeries.getCols().length; i++) {
             int k = 0;
             while (k != 10) {
-                if (timeSeries.getCols()[i].getName().intern() == XML_settings.settingsList.get(k).getRealColName().intern()) {
-                    if (CSVindexmap.get(XML_settings.settingsList.get(k).getColName()) == null)
-                        CSVindexmap.put(XML_settings.settingsList.get(k).getColName(), i);
+                if (timeSeries.getCols()[i].getName().intern() == XML_settings.PropertyList.get(k).getRealName().intern()) {
+                    if (CSVindexmap.get(XML_settings.PropertyList.get(k).getAssosicateName()) == null)
+                        CSVindexmap.put(XML_settings.PropertyList.get(k).getAssosicateName(), i);
                     break;
                 }
                 k++;
@@ -266,7 +303,7 @@ public class Model extends AllModels {
             } catch (IOException e) {
             }
 
-            in = new TimeSeries(Model.CSVpath);
+            in = new TimeSeries(CSVpath);
             flightLong = in.getCols()[0].getFloats().size() + 1;
 
             try {
@@ -279,7 +316,7 @@ public class Model extends AllModels {
         notifyObservers("resultOpenCSV");
     }
 
-    public void resume(Thread simulatorThread, Thread timerThread)
+    protected void resume(Thread simulatorThread, Thread timerThread)
     {
         if (simulatorThread != null)
         {
@@ -288,6 +325,7 @@ public class Model extends AllModels {
         }
     }
 
+    @Override
     public void modelPlay() {
         if (playFlag == 0) {
             simulator10Thread = new Thread(() -> {
@@ -310,19 +348,19 @@ public class Model extends AllModels {
         }
     }
 
-    public void changeSpeed(double speed) {
+    protected void changeSpeed(double speed) {
         try {
-            Thread.sleep((long) (Model.XML_settings.additionalSettings.getSampleRate() / speed));
+            Thread.sleep((long) (XML_settings.additionalSettings.getDataSamplingRate() / speed));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void changeTimerSpeed(double speed) {
+    protected void changeTimerSpeed(double speed) {
         nowTime += 1000 * speed;
     }
 
-    public void allChanges()
+    protected void allChanges()
     {
         rudderstep = in.getCols()[CSVindexmap.get(XML_settings.RealToAssosicate.get("rudder"))].getFloats().get(numofrow);
         setChanged();
@@ -383,7 +421,7 @@ public class Model extends AllModels {
         }
     }
 
-    public void simulatorLoop(double speed) {
+    protected void simulatorLoop(double speed) {
         while (numofrow < in.getRows().size() - 2) {
             if (out != null) {
                 out.println(in.getRows().get(numofrow));
@@ -406,7 +444,7 @@ public class Model extends AllModels {
         }
     }
 
-    public void timerLoop(double speed) {
+    protected void timerLoop(double speed) {
         while (true) {
             try {
                 Thread.sleep(1000); //1 second
@@ -415,9 +453,9 @@ public class Model extends AllModels {
             }
             changeTimerSpeed(speed);
 
-            if (nowTime >= ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getSampleRate() / 10)) * 1000 - 1000)
+            if (nowTime >= ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getDataSamplingRate() / 10)) * 1000 - 1000)
             {
-                nowTime = ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getSampleRate() / 10)) * 1000 - 1000;
+                nowTime = ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getDataSamplingRate() / 10)) * 1000 - 1000;
                 time = simpleDateFormat.format(nowTime - 7200000);
                 setChanged();
                 notifyObservers("time");
@@ -430,7 +468,7 @@ public class Model extends AllModels {
         }
     }
 
-    public void suspendForPlay(Thread simulatorThread, Thread timerThread)
+    protected void suspendForPlay(Thread simulatorThread, Thread timerThread)
     {
         if (simulatorThread != null) {
             simulatorThread.suspend();
@@ -438,6 +476,7 @@ public class Model extends AllModels {
         }
     }
 
+    @Override
     public void modelGetChoice(String speed) {
         if (speed.intern() == "x2.0") {
             suspendForPlay(simulator05Thread, timer05Thread);
@@ -510,7 +549,7 @@ public class Model extends AllModels {
         }
     }
 
-    public void suspendForPause(Thread simulatorThread, Thread timerThread)
+    protected void suspendForPause(Thread simulatorThread, Thread timerThread)
     {
         if (simulatorThread != null)
         {
@@ -519,6 +558,7 @@ public class Model extends AllModels {
         }
     }
 
+    @Override
     public void modelpause()
     {
         suspendForPause(simulator05Thread, timer05Thread);
@@ -529,28 +569,32 @@ public class Model extends AllModels {
         playFlag = 1;
     }
 
+    @Override
     public void modelPlus15() {
         Plus_Minus_Time(15, "+");
     }
 
+    @Override
     public void modelMinus15() {
         Plus_Minus_Time(15, "-");
     }
 
+    @Override
     public void modelMinus30() {
         Plus_Minus_Time(30, "-");
     }
 
+    @Override
     public void modelPlus30() {
         Plus_Minus_Time(30, "+");
     }
 
-    public void Plus_Minus_Time(int seconds, String math) {
+    protected void Plus_Minus_Time(int seconds, String math) {
         if (math.intern() == "+") {
-            numofrow += (XML_settings.additionalSettings.getSampleRate() / 10) * seconds;
+            numofrow += (XML_settings.additionalSettings.getDataSamplingRate() / 10) * seconds;
             nowTime += seconds * 1000;
         } else {
-            numofrow -= (XML_settings.additionalSettings.getSampleRate() / 10) * seconds;
+            numofrow -= (XML_settings.additionalSettings.getDataSamplingRate() / 10) * seconds;
             nowTime -= seconds * 1000;
         }
     }
@@ -572,14 +616,15 @@ public class Model extends AllModels {
     }
 
     public double modelSetMaxTimeSlider() {
-        return ((double)(in.getCols()[0].getFloats().size() + 1) / (double)(XML_settings.additionalSettings.getSampleRate() / 10)) - 1;
+        return ((double)(in.getCols()[0].getFloats().size() + 1) / (double)(XML_settings.additionalSettings.getDataSamplingRate() / 10)) - 1;
     }
 
     public void modelTimeSlider(double second) {
-        numofrow = (int) (second * (XML_settings.additionalSettings.getSampleRate() / 10));
+        numofrow = (int) (second * (XML_settings.additionalSettings.getDataSamplingRate() / 10));
         nowTime = (long) (second * 1000);
     }
 
+    @Override
     public void modelStop()
     {
         numofrow = 0;
@@ -592,11 +637,13 @@ public class Model extends AllModels {
         playFlag = 0;
     }
 
+    @Override
     public void modelSetLeftLineChart(String colName)
     {
         nameOfCol = colName;
     }
 
+    @Override
     public void modelSetRightLineChart(String colName)
     {
         List<CorrelatedFeatures> list = linearRegression.getNormalModel();
@@ -606,6 +653,7 @@ public class Model extends AllModels {
         }
     }
 
+    @Override
     public void modelSetAlgorithmLineChart(String colName)
     {
         if (realHybrid == 1)
@@ -675,6 +723,7 @@ public class Model extends AllModels {
 
     }
 
+    @Override
     public void modelLoadAlgorithm(String resultClassDirectory, String resultClassName)
     {
         URL[] urls = new URL[1];
