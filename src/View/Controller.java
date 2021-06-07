@@ -256,9 +256,13 @@ public class Controller extends Pane implements Observer, Initializable {
                 if (viewModel.getClassName().intern() == "class Model.ZScore") {
                     setAlgorithmLineChart(theColName);
                 }
-            }
+            }//////
+
             Platform.runLater(() -> myGraphs.leftSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmColValues().get(numofrow.getValue())))));
+
             Platform.runLater(() -> myGraphs.rightSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmCoralatedColValues().get(numofrow.getValue())))));
+
+
             if (viewModel.getClassName().intern() == "class Model.LinearRegression" || viewModel.getClassName().intern() == "class Model.Hybrid") {
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().clear());
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().add((new XYChart.Data(viewModel.getAnomalyAlgorithmColValues().get(numofrow.getValue()), viewModel.getAnomalyAlgorithmCoralatedColValues().get(numofrow.getValue())))));
@@ -266,6 +270,8 @@ public class Controller extends Pane implements Observer, Initializable {
             if (viewModel.getClassName().intern() == "class Model.ZScore") {
                 Platform.runLater(() -> myGraphs.algorithmSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getZScoreline().get(numofrow.getValue())))));
             }
+
+            ////// fill till here
         });
 
         report.addListener((observable, oldValue, newValue) -> {
