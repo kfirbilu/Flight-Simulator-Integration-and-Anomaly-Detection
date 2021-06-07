@@ -48,7 +48,7 @@ public class MyJoystick extends Pane {
         innerCircle.setRadius(35);
         innerCircle.setLayoutX(710);
         innerCircle.setLayoutY(103);
-        innerCircle.setFill(Paint.valueOf("afb4b9"));
+        innerCircle.setFill(Paint.valueOf("3D85C6"));
         innerCircle.setStroke(Paint.valueOf("BLACK"));
         innerCircle.setStrokeType(StrokeType.INSIDE);
         ret.add(innerCircle);

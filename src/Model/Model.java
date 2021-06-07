@@ -213,6 +213,9 @@ public class Model extends AllModels {
             resultLoadXML = "SuccessAlert";
             regularFlight = new TimeSeries(XML_settings.additionalSettings.getProperFlightFile());
             regularFlight.setCorrelationTresh(0);
+
+
+
             linearRegression.learnNormal(regularFlight);
             zScore.learnNormal(regularFlight);
             hybrid.HybridAlgorithm(regularFlight);
@@ -320,8 +323,8 @@ public class Model extends AllModels {
     {
         if (simulatorThread != null)
         {
-            simulatorThread.resume();
-            timerThread.resume();
+            simulatorThread.checkAccess();
+            timerThread.checkAccess();
         }
     }
 
@@ -471,8 +474,8 @@ public class Model extends AllModels {
     protected void suspendForPlay(Thread simulatorThread, Thread timerThread)
     {
         if (simulatorThread != null) {
-            simulatorThread.suspend();
-            timerThread.suspend();
+            simulatorThread.checkAccess();
+            timerThread.checkAccess();
         }
     }
 
@@ -553,8 +556,8 @@ public class Model extends AllModels {
     {
         if (simulatorThread != null)
         {
-            simulatorThread.suspend();
-            timerThread.suspend();
+            simulatorThread.checkAccess();
+            timerThread.checkAccess();
         }
     }
 
