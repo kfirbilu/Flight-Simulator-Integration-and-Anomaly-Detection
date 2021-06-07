@@ -47,12 +47,18 @@ public class Controller extends Pane implements Observer, Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // top menu settings
         board.getChildren().add(myMenu.set());
         myMenu.loadXML.setOnAction((e) -> LoadXML());
         myMenu.loadAlgorithm.setOnAction((e) -> loadAlgorithm());
+        myMenu.exitProgram.setOnAction((e)->exitProgram());
 
+        //buttons settings
         board.getChildren().addAll(myListView.set());
-        myListView.open.setOnAction((e) -> openCSV());
+        myListView.openCSV.setOnAction((e) -> openCSV());
+        myListView.openXML.setOnAction((e)->LoadXML());
+        myListView.openAlgo.setOnAction((e)->loadAlgorithm());
+
         myListView.listView.setOnMouseClicked((e) -> setLineCharts((String)myListView.listView.getSelectionModel().getSelectedItem()));
 
         board.getChildren().addAll(myButtons.set());
@@ -494,6 +500,10 @@ public class Controller extends Pane implements Observer, Initializable {
                 }
             });
         }
+    }
+
+    public void exitProgram(){
+        System.exit(0);
     }
 
     public void loadAlgorithm()
