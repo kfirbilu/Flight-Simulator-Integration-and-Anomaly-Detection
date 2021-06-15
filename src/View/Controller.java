@@ -49,8 +49,6 @@ public class Controller extends Pane implements Observer, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // top menu settings
         board.getChildren().add(myMenu.set());
-        myMenu.loadXML.setOnAction((e) -> LoadXML());
-        myMenu.loadAlgorithm.setOnAction((e) -> loadAlgorithm());
         myMenu.exitProgram.setOnAction((e)->exitProgram());
 
         //buttons settings

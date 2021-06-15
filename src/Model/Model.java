@@ -329,6 +329,7 @@ public class Model extends AllModels {
     }
 
     @Override
+
     public void modelPlay() {
         if (playFlag == 0) {
             simulator10Thread = new Thread(() -> {
