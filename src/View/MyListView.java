@@ -20,7 +20,7 @@ public class MyListView extends Pane {
         List<Node> ret = new ArrayList<>();
 
         listView = new ListView();
-        listView.setPrefSize(175, 362);  // was 163,362
+        listView.setPrefSize(175, 362);
         listView.setLayoutY(43);
         listView.setLayoutX(10);  // was 25
         ret.add(listView);
@@ -44,8 +44,6 @@ public class MyListView extends Pane {
         openCSV.setPrefSize(175, 25);
         ret.add(openCSV);
 
-
-        //////////////////////////////////////////////
 
 
         return ret;

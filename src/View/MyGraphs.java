@@ -72,9 +72,9 @@ public class MyGraphs extends Pane
         algorithmyAxis.setTickLabelsVisible(false);
         algorithmLineChart.setAnimated(false);
         algorithmLineChart.setCreateSymbols(true);
-        algorithmSeries.setName("algorithm line");
-        algorithmSeries1.setName("regular flight");
-        algorithmSeries2.setName("anomaly flight");
+        algorithmSeries.setName("Algorithm line");
+        algorithmSeries1.setName("Regular flight");
+        algorithmSeries2.setName("Anomaly flight");
         Platform.runLater(() -> algorithmLineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: WHITE;"));
         ret.add(algorithmLineChart);
 
