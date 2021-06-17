@@ -26,5 +26,4 @@ public final class Circle {
     public String toString() {
         return String.format("Circle(x=%g, y=%g, r=%g)", c.x, c.y, r);
     }
-
 }

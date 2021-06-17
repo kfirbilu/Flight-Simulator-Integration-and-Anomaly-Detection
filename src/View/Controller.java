@@ -47,16 +47,13 @@ public class Controller extends Pane implements Observer, Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // top menu settings
         board.getChildren().add(myMenu.set());
-        myMenu.exitProgram.setOnAction((e)->exitProgram());
 
-        //buttons settings
+
         board.getChildren().addAll(myListView.set());
         myListView.openCSV.setOnAction((e) -> openCSV());
         myListView.openXML.setOnAction((e)->LoadXML());
         myListView.openAlgo.setOnAction((e)->loadAlgorithm());
-
         myListView.listView.setOnMouseClicked((e) -> setLineCharts((String)myListView.listView.getSelectionModel().getSelectedItem()));
 
         board.getChildren().addAll(myButtons.set());
@@ -254,22 +251,20 @@ public class Controller extends Pane implements Observer, Initializable {
                 if (viewModel.getClassName().intern() == "class Model.ZScore") {
                     setAlgorithmLineChart(theColName);
                 }
-            }//////
-
+            }
             Platform.runLater(() -> myGraphs.leftSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmColValues().get(numofrow.getValue())))));
-
             Platform.runLater(() -> myGraphs.rightSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmCoralatedColValues().get(numofrow.getValue())))));
-
-
-            if (viewModel.getClassName().intern() == "class Model.LinearRegression" || viewModel.getClassName().intern() == "class Model.Hybrid") {
+            if (viewModel.getClassName().intern() == "class Model.LinearRegression") {
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().clear());
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().add((new XYChart.Data(viewModel.getAnomalyAlgorithmColValues().get(numofrow.getValue()), viewModel.getAnomalyAlgorithmCoralatedColValues().get(numofrow.getValue())))));
             }
             if (viewModel.getClassName().intern() == "class Model.ZScore") {
                 Platform.runLater(() -> myGraphs.algorithmSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getZScoreline().get(numofrow.getValue())))));
             }
-
-            ////// fill till here
+            if (viewModel.getClassName().intern() == "class Model.Hybrid") {
+                Platform.runLater(() -> myGraphs.algorithmSeries2.getData().clear());
+                Platform.runLater(() -> myGraphs.algorithmSeries2.getData().add((new XYChart.Data(viewModel.getAnomalyAlgorithmColValues().get(numofrow.getValue()), viewModel.getAnomalyAlgorithmCoralatedColValues().get(numofrow.getValue())))));
+            }
         });
 
         report.addListener((observable, oldValue, newValue) -> {
@@ -284,8 +279,8 @@ public class Controller extends Pane implements Observer, Initializable {
         elevatorstep.addListener((observable, oldValue, newValue) -> myJoystick.innerCircle.setCenterY(elevatorstep.getValue() * 70));
 
         myButtons.slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-           // if (((double)oldValue + 1 != (double)newValue) && (((double)oldValue + 0.5) != (double)newValue) && (((double)oldValue + 1.5) != (double)newValue) && (((double)oldValue + 2) != (double)newValue))
-                viewModel.VMtimeslider(myButtons.slider.getValue());
+            // if (((double)oldValue + 1 != (double)newValue) && (((double)oldValue + 0.5) != (double)newValue) && (((double)oldValue + 1.5) != (double)newValue) && (((double)oldValue + 2) != (double)newValue))
+            viewModel.VMtimeslider(myButtons.slider.getValue());
         });
 
         altimeterstep.addListener((observable, oldValue, newValue) -> Platform.runLater(() -> myClocksPannel.altimeter.setText("altimeter: " + altimeterstep.getValue())));
@@ -376,6 +371,7 @@ public class Controller extends Pane implements Observer, Initializable {
 
     public void Stop()
     {
+        playStart = 0;
         myButtons.timer.setText("00:00:00.000");
         myClocksPannel.altimeter.setText("altimeter: 0.0");
         myClocksPannel.airspeed.setText("airspeed: 0.0");
@@ -388,6 +384,7 @@ public class Controller extends Pane implements Observer, Initializable {
         myJoystick.innerCircle.setCenterY(0);
         myJoystick.throttle.setValue(0);
         myJoystick.rudder.setValue(0);
+        myButtons.playSpeedDropDown.setValue("");
         viewModel.VMstop();
     }
 
@@ -452,7 +449,6 @@ public class Controller extends Pane implements Observer, Initializable {
     {
         Platform.runLater(() -> myGraphs.algorithmSeries.getData().clear());
         Platform.runLater(() -> myGraphs.algorithmSeries1.getData().clear());
-        Platform.runLater(() -> myGraphs.algorithmSeries3.getData().clear());
 
         if (viewModel.getClassName().intern() == "class Model.LinearRegression") {
 
@@ -480,6 +476,7 @@ public class Controller extends Pane implements Observer, Initializable {
 
         if (viewModel.getClassName().intern() == "class Model.ZScore")
         {
+
             for (int i = 0; i <= numofrow.getValue(); i++)
             {
                 int finalI = i;
@@ -489,25 +486,15 @@ public class Controller extends Pane implements Observer, Initializable {
 
         if (viewModel.getClassName().intern() == "class Model.Hybrid")
         {
-            for (int i = 0; i < viewModel.getAlgorithmColValues().size(); i+=50) {
+            for (Point point : viewModel.getPointsForCircle()) {
+                Platform.runLater(() ->myGraphs.algorithmSeries.getData().add(new XYChart.Data(point.x, point.y)));
+            }
+
+            for (int i = 0; i < viewModel.getAlgorithmColValues().size(); i++) {
                 int finalI = i;
                 Platform.runLater(() -> myGraphs.algorithmSeries1.getData().add(new XYChart.Data(viewModel.getAlgorithmColValues().get(finalI), viewModel.getAlgorithmCoralatedColValues().get(finalI))));
             }
-
-            Platform.runLater(() -> myGraphs.algorithmSeries3.getData().add(new XYChart.Data(viewModel.getAlgorithmCircle().c.x / 1000, viewModel.getAlgorithmCircle().c.y / 1000)));
-            Platform.runLater(() -> {
-                XYChart.Series<Number, Number> series = myGraphs.algorithmLineChart.getData().get(3);
-                for (XYChart.Data<Number, Number> data : series.getData()) {
-                    StackPane stackPane = (StackPane) data.getNode();
-                    stackPane.setPrefWidth(viewModel.getAlgorithmCircle().r * 500);
-                    stackPane.setPrefHeight(viewModel.getAlgorithmCircle().r * 500);
-                }
-            });
         }
-    }
-
-    public void exitProgram(){
-        System.exit(0);
     }
 
     public void loadAlgorithm()

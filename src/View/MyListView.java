@@ -25,26 +25,24 @@ public class MyListView extends Pane {
         listView.setLayoutX(10);  // was 25
         ret.add(listView);
 
-        openCSV = new Button("1. Open CSV");
-        openCSV.setLayoutX(10); //was 25
-        openCSV.setLayoutY(410);
-        openCSV.setPrefSize(85, 25); // was 163,42
-        ret.add(openCSV);
 
-
-        //////////////////////////////////////////////
-
-        openXML = new Button("2. Open XML");
-        openXML.setLayoutX(100);
+        openXML = new Button("1. Open XML");
+        openXML.setLayoutX(10);
         openXML.setLayoutY(410);
         openXML.setPrefSize(85, 25);
         ret.add(openXML);
 
-        openAlgo = new Button("3. Open Algorithm");
-        openAlgo.setLayoutX(10);
-        openAlgo.setLayoutY(440);
-        openAlgo.setPrefSize(175, 25);
+        openAlgo = new Button("2. Open Algorithm");
+        openAlgo.setLayoutX(100);
+        openAlgo.setLayoutY(410);
+        openAlgo.setPrefSize(85, 25);
         ret.add(openAlgo);
+
+        openCSV = new Button("3. Open CSV");
+        openCSV.setLayoutX(10);
+        openCSV.setLayoutY(440);
+        openCSV.setPrefSize(175, 25);
+        ret.add(openCSV);
 
 
         //////////////////////////////////////////////

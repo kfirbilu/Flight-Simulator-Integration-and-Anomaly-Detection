@@ -3,6 +3,7 @@ package ViewModel;
 import Server.Circle;
 import Model.Model;
 import Server.Line;
+import Server.Point;
 import javafx.beans.property.*;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -17,12 +18,12 @@ public class ViewModel extends AllViewModels {
     private ArrayList<Float> anomalyAlgorithmCoralatedColValues;
     private ArrayList<Float> ZScoreline;
 
+    private ArrayList<Point> pointsForCircle;
+
     private String className;
 
     private Line algorithmLine;
     private Circle algorithmCircle;
-
-    Model model;
 
     private int minColValue;
     private int maxColValue;
@@ -76,6 +77,8 @@ public class ViewModel extends AllViewModels {
     {
         return anomalyAlgorithmCoralatedColValues;
     }
+
+    public ArrayList<Point> getPointsForCircle() { return  pointsForCircle; }
 
     public ArrayList<Float> getZScoreline()
     {
@@ -212,6 +215,7 @@ public class ViewModel extends AllViewModels {
         algorithmColValues = new ArrayList<>();
         algorithmCoralatedColValues = new ArrayList<>();
         ZScoreline = new ArrayList<>();
+        pointsForCircle = new ArrayList<>();
 
         loadXMLResult = new SimpleStringProperty();
         openCSVResult = new SimpleStringProperty();
@@ -419,6 +423,7 @@ public class ViewModel extends AllViewModels {
             anomalyAlgorithmColValues = model.getAnomalyAlgorithmColValues();
             anomalyAlgorithmCoralatedColValues = model.getAnomalyAlgorithmCoralatedColValues();
             algorithmCircle = model.getAlgorithmCircle();
+            pointsForCircle = model.getPointsForCircle();
         }
     }
 

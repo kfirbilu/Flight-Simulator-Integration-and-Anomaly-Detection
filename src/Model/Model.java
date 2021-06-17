@@ -14,17 +14,56 @@ import java.util.*;
 
 public class Model extends AllModels {
 
+    private class simulator extends TimerTask {
+        public void run() {
+            simulatorLoop();
+        }
+    }
+
+    private class timer10 extends TimerTask {
+        boolean is_running = false;
+        public void run() {
+            simulatorLoop();
+            timerLoop(1);
+        }
+    }
+
+    private class timer20 extends TimerTask {
+        boolean is_running = false;
+        public void run() {
+            simulatorLoop();
+            timerLoop(2);
+        }
+    }
+
+    private class timer05 extends TimerTask {
+        boolean is_running = false;
+        public void run() {
+            simulatorLoop();
+            timerLoop(0.5);
+        }
+    }
+
+    private class timer15 extends TimerTask {
+        boolean is_running = false;
+        public void run() {
+            simulatorLoop();
+            timerLoop(1.5);
+        }
+    }
+
+    Timer timer = new Timer();
+
+    simulator simulator;
+    timer10 timer10;
+    timer20 timer20;
+    timer05 timer05;
+    timer15 timer15;
+
+
     HandleXML XML_settings;
     String CSVpath;
-
-    Thread simulator20Thread = null;
-    Thread timer20Thread = null;
-    Thread simulator05Thread = null;
-    Thread timer05Thread = null;
-    Thread simulator10Thread = null;
-    Thread timer10Thread = null;
-    Thread simulator15Thread = null;
-    Thread timer15Thread = null;
+    String _speed;
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss.S");
 
@@ -71,6 +110,7 @@ public class Model extends AllModels {
     private ArrayList<Float> anomalyAlgorithmCoralatedColValues = new ArrayList<>();
     private ArrayList<Float> anomalyAlgorithmColValues = new ArrayList<>();
     private ArrayList<Float> ZScoreLine = new ArrayList<>();
+    private ArrayList<Point> pointsForCircle = new ArrayList<>();
 
     TimeSeriesAnomalyDetector ad;
     TimeSeries regularFlight;
@@ -91,13 +131,11 @@ public class Model extends AllModels {
         return resultLoadXML;
     }
 
-    public String getResultLoadAlgorithm()
-    {
+    public String getResultLoadAlgorithm() {
         return resultLoadAlgorithm;
     }
 
-    public String getClassName()
-    {
+    public String getClassName() {
         return className;
     }
 
@@ -113,19 +151,19 @@ public class Model extends AllModels {
         return algorithmCoralatedColValues;
     }
 
-    public ArrayList<Float> getAnomalyAlgorithmColValues()
-    {
+    public ArrayList<Float> getAnomalyAlgorithmColValues() {
         return anomalyAlgorithmColValues;
     }
 
-    public ArrayList<Float> getAnomalyAlgorithmCoralatedColValues()
-    {
+    public ArrayList<Float> getAnomalyAlgorithmCoralatedColValues() {
         return anomalyAlgorithmCoralatedColValues;
     }
 
     public ArrayList<Float> getZScoreLine() {
         return ZScoreLine;
     }
+
+    public ArrayList<Point> getPointsForCircle() { return pointsForCircle; }
 
     public float getRudderstep() {
         return rudderstep;
@@ -167,23 +205,19 @@ public class Model extends AllModels {
         return yawstep;
     }
 
-    public int getMinColValue()
-    {
+    public int getMinColValue() {
         return minColValue;
     }
 
-    public int getMaxColValue()
-    {
+    public int getMaxColValue() {
         return maxColValue;
     }
 
-    public int getNumofrow()
-    {
+    public int getNumofrow() {
         return numofrow;
     }
 
-    public int getFlightLong()
-    {
+    public int getFlightLong() {
         return flightLong;
     }
 
@@ -191,8 +225,7 @@ public class Model extends AllModels {
         return algorithmLine;
     }
 
-    public Circle getAlgorithmCircle()
-    {
+    public Circle getAlgorithmCircle() {
         return algorithmCircle;
     }
 
@@ -213,9 +246,6 @@ public class Model extends AllModels {
             resultLoadXML = "SuccessAlert";
             regularFlight = new TimeSeries(XML_settings.additionalSettings.getProperFlightFile());
             regularFlight.setCorrelationTresh(0);
-
-
-
             linearRegression.learnNormal(regularFlight);
             zScore.learnNormal(regularFlight);
             hybrid.HybridAlgorithm(regularFlight);
@@ -236,8 +266,7 @@ public class Model extends AllModels {
     @Override
     public void ModelOpenCSV(String chosenPath) {
         //load the last XML
-        if (XML_settings == null)
-        {
+        if (XML_settings == null) {
             String chosen = null;
             Scanner scanner;
             try {
@@ -319,44 +348,41 @@ public class Model extends AllModels {
         notifyObservers("resultOpenCSV");
     }
 
-    protected void resume(Thread simulatorThread, Thread timerThread)
-    {
-        if (simulatorThread != null)
-        {
-            simulatorThread.checkAccess();
-            timerThread.checkAccess();
-        }
-    }
-
     @Override
-
     public void modelPlay() {
-        if (playFlag == 0) {
-            simulator10Thread = new Thread(() -> {
-                simulatorLoop(1);
-            });
-            simulator10Thread.start();
-            timer10Thread = new Thread(() -> {
-                timerLoop(1);
-            });
-            timer10Thread.start();
-        }
-        if (playFlag == 1)
-        {
-            resume(simulator10Thread, timer10Thread);
-            resume(simulator20Thread, timer20Thread);
-            resume(simulator15Thread, timer15Thread);
-            resume(simulator05Thread, timer05Thread);
+        if (playFlag == 1) {
+            if (_speed.intern() == "x2.0") {
+                simulator = new simulator();
+                timer20 = new timer20();
+                timer.scheduleAtFixedRate(simulator, 0, XML_settings.additionalSettings.getDataSamplingRate());
+                timer.scheduleAtFixedRate(timer20, 0, 1000);
+                timer20.is_running = true;
+            }
 
+            if (_speed.intern() == "x0.5") {
+                simulator = new simulator();
+                timer05 = new timer05();
+                timer.scheduleAtFixedRate(simulator, 0, XML_settings.additionalSettings.getDataSamplingRate());
+                timer.scheduleAtFixedRate(timer05, 0,  1000);
+                timer05.is_running = true;
+            }
+
+            if (_speed.intern() == "x1.0") {
+                simulator = new simulator();
+                timer10 = new timer10();
+                timer.scheduleAtFixedRate(simulator, 0, XML_settings.additionalSettings.getDataSamplingRate());
+                timer.scheduleAtFixedRate(timer10, 0,  1000);
+                timer10.is_running = true;
+            }
+
+            if (_speed.intern() == "x1.5") {
+                simulator = new simulator();
+                timer15 = new timer15();
+                timer.scheduleAtFixedRate(simulator, 0, XML_settings.additionalSettings.getDataSamplingRate());
+                timer.scheduleAtFixedRate(timer15, 0, 1000);
+                timer15.is_running = true;
+            }
             playFlag = 0;
-        }
-    }
-
-    protected void changeSpeed(double speed) {
-        try {
-            Thread.sleep((long) (XML_settings.additionalSettings.getDataSamplingRate() / speed));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
@@ -425,150 +451,156 @@ public class Model extends AllModels {
         }
     }
 
-    protected void simulatorLoop(double speed) {
-        while (numofrow < in.getRows().size() - 2) {
+    protected void simulatorLoop() {
+        if (numofrow >= in.getRows().size() - 2) {
+            timer.cancel();
+            modelStop();
+            /*
+            if (out != null) {
+                out.close();
+                try {
+                    fg.close();
+                } catch (IOException e) {
+                }
+            }
+             */
+        }
+        else {
             if (out != null) {
                 out.println(in.getRows().get(numofrow));
                 out.flush();
             }
-
             allChanges();
-
-            changeSpeed(speed);
             numofrow++;
             setChanged();
             notifyObservers("numofrow");
         }
-        modelStop();
-        if (out != null)
-            out.close();
-        try {
-            fg.close();
-        } catch (IOException e) {
-        }
     }
 
     protected void timerLoop(double speed) {
-        while (true) {
-            try {
-                Thread.sleep(1000); //1 second
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            changeTimerSpeed(speed);
+        changeTimerSpeed(speed);
+        if (nowTime >= ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getDataSamplingRate() / 10)) * 1000 - 1000)
+            nowTime = ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getDataSamplingRate() / 10)) * 1000 - 1000;
+        time = simpleDateFormat.format(nowTime - 7200000);
+        setChanged();
+        notifyObservers("time");
 
-            if (nowTime >= ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getDataSamplingRate() / 10)) * 1000 - 1000)
-            {
-                nowTime = ((in.getCols()[0].getFloats().size() + 1) / (XML_settings.additionalSettings.getDataSamplingRate() / 10)) * 1000 - 1000;
-                time = simpleDateFormat.format(nowTime - 7200000);
-                setChanged();
-                notifyObservers("time");
-                break;
-            }
-
-            time = simpleDateFormat.format(nowTime - 7200000);
-            setChanged();
-            notifyObservers("time");
-        }
     }
 
-    protected void suspendForPlay(Thread simulatorThread, Thread timerThread)
+    protected void suspend(TimerTask simulator, TimerTask _timer)
     {
-        if (simulatorThread != null) {
-            simulatorThread.checkAccess();
-            timerThread.checkAccess();
-        }
+        simulator.cancel();
+        _timer.cancel();
     }
 
     @Override
     public void modelGetChoice(String speed) {
-        if (speed.intern() == "x2.0") {
-            suspendForPlay(simulator05Thread, timer05Thread);
-            suspendForPlay(simulator10Thread, timer10Thread);
-            suspendForPlay(simulator15Thread, timer15Thread);
-            simulator05Thread = null;
-            simulator10Thread = null;
-            simulator15Thread = null;
+        _speed = speed;
 
-            simulator20Thread = new Thread(() ->
-            {
-                simulatorLoop(2);
-            });
-            simulator20Thread.start();
-            timer20Thread = new Thread(() ->
-            {
-                timerLoop(2);
-            });
-            timer20Thread.start();
+        if (speed.intern() == "x2.0") {
+            if (timer10 != null && timer10.is_running) {
+                suspend(simulator, timer10);
+                timer10.is_running = false;
+            }
+            if (timer15 != null && timer15.is_running) {
+                suspend(simulator, timer15);
+                timer15.is_running = false;
+            }
+            if (timer05 != null && timer05.is_running) {
+                suspend(simulator, timer05);
+                timer05.is_running = false;
+            }
+
+            simulator = new simulator();
+            timer20 = new timer20();
+            timer.scheduleAtFixedRate(simulator, 0, XML_settings.additionalSettings.getDataSamplingRate() / 2);
+            timer.scheduleAtFixedRate(timer20, 0, 1000);
+            timer20.is_running = true;
         }
 
         if (speed.intern() == "x0.5") {
-            suspendForPlay(simulator10Thread, timer10Thread);
-            suspendForPlay(simulator15Thread, timer15Thread);
-            suspendForPlay(simulator20Thread, timer20Thread);
-            simulator10Thread = null;
-            simulator15Thread = null;
-            simulator20Thread = null;
-            simulator05Thread = new Thread(() ->
-            {
-                simulatorLoop(0.5);
-            });
-            simulator05Thread.start();
-            timer05Thread = new Thread(() ->
-            {
-                timerLoop(0.5);
-            });
-            timer05Thread.start();
+            if (timer10 != null && timer10.is_running) {
+                suspend(simulator, timer10);
+                timer10.is_running = false;
+            }
+            if (timer15 != null && timer15.is_running) {
+                suspend(simulator, timer15);
+                timer15.is_running = false;
+            }
+            if (timer20 != null && timer20.is_running) {
+                suspend(simulator, timer20);
+                timer20.is_running = false;
+            }
+
+            simulator = new simulator();
+            timer05 = new timer05();
+            timer.scheduleAtFixedRate(simulator, 0, (long) (XML_settings.additionalSettings.getDataSamplingRate() / 0.5));
+            timer.scheduleAtFixedRate(timer05, 0, 1000);
+            timer05.is_running = true;
         }
 
-        if (speed.intern() == "x1.0") {
-            if (simulator15Thread != null || simulator20Thread != null || simulator05Thread != null) {
-                suspendForPlay(simulator05Thread, timer05Thread);
-                suspendForPlay(simulator15Thread, timer15Thread);
-                suspendForPlay(simulator20Thread, timer20Thread);
-                simulator05Thread = null;
-                simulator15Thread = null;
-                simulator20Thread = null;
-                modelPlay();
+        if (speed.intern() == "x1.0")
+        {
+            if (timer05 != null && timer05.is_running) {
+                suspend(simulator, timer05);
+                timer05.is_running = false;
             }
+            if (timer15 != null && timer15.is_running) {
+                suspend(simulator, timer15);
+                timer15.is_running = false;
+            }
+            if (timer20 != null && timer20.is_running) {
+                suspend(simulator, timer20);
+                timer20.is_running = false;
+            }
+            simulator = new simulator();
+            timer10 = new timer10();
+            timer.scheduleAtFixedRate(simulator, 0, (XML_settings.additionalSettings.getDataSamplingRate() / 1));
+            timer.scheduleAtFixedRate(timer10, 0, 1000);
+            timer10.is_running = true;
         }
 
         if (speed.intern() == "x1.5") {
-            suspendForPlay(simulator05Thread, timer05Thread);
-            suspendForPlay(simulator10Thread, timer10Thread);
-            suspendForPlay(simulator20Thread, timer20Thread);
-            simulator05Thread = null;
-            simulator10Thread = null;
-            simulator20Thread = null;
-            simulator15Thread = new Thread(() ->
-            {
-                simulatorLoop(1.5);
-            });
-            simulator15Thread.start();
-            timer15Thread = new Thread(() ->
-            {
-                timerLoop(1.5);
-            });
-            timer15Thread.start();
-        }
-    }
+            if (timer10 != null && timer10.is_running) {
+                suspend(simulator, timer10);
+                timer10.is_running = false;
+            }
+            if (timer20 != null && timer20.is_running) {
+                suspend(simulator, timer20);
+                timer20.is_running = false;
+            }
+            if (timer05 != null && timer05.is_running) {
+                suspend(simulator, timer05);
+                timer05.is_running = false;
+            }
 
-    protected void suspendForPause(Thread simulatorThread, Thread timerThread)
-    {
-        if (simulatorThread != null)
-        {
-            simulatorThread.checkAccess();
-            timerThread.checkAccess();
+            simulator = new simulator();
+            timer15 = new timer15();
+            timer.scheduleAtFixedRate(simulator, 0, (long) (XML_settings.additionalSettings.getDataSamplingRate() / 1.5));
+            timer.scheduleAtFixedRate(timer15, 0, 1000);
+            timer15.is_running = true;
         }
     }
 
     @Override
     public void modelpause()
     {
-        suspendForPause(simulator05Thread, timer05Thread);
-        suspendForPause(simulator10Thread, timer10Thread);
-        suspendForPause(simulator15Thread, timer15Thread);
-        suspendForPause(simulator20Thread, timer20Thread);
+        if (timer10 != null && timer10.is_running) {
+            suspend(simulator, timer10);
+            timer10.is_running = false;
+        }
+        if (timer20 != null && timer20.is_running) {
+            suspend(simulator, timer20);
+            timer20.is_running = false;
+        }
+        if (timer05 != null && timer05.is_running) {
+            suspend(simulator, timer05);
+            timer05.is_running = false;
+        }
+        if (timer15 != null && timer15.is_running) {
+            suspend(simulator, timer15);
+            timer15.is_running = false;
+        }
 
         playFlag = 1;
     }
@@ -634,11 +666,8 @@ public class Model extends AllModels {
         numofrow = 0;
         nowTime = 0;
         modelpause();
-        simulator10Thread = null;
-        simulator05Thread = null;
-        simulator15Thread = null;
-        simulator20Thread = null;
         playFlag = 0;
+        timer = new Timer();
     }
 
     @Override
@@ -700,6 +729,12 @@ public class Model extends AllModels {
                 }
 
                 algorithmCircle = hybrid.whoCircle.get(colName);
+                for(double i = 0; i<360; i+=0.5)
+                {
+                    float x=(float) (algorithmCircle.r*Math.cos(i) + algorithmCircle.c.x);
+                    float y=(float) (algorithmCircle.r*Math.sin(i) + algorithmCircle.c.y);
+                    pointsForCircle.add(new Point(x, y));
+                }
             }
         }
 
