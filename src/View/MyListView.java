@@ -10,7 +10,7 @@ import java.util.List;
 
 public class MyListView extends Pane {
 
-    ListView listView;
+    ListView attributesList;
 
     Button openCSV;
     Button openXML;
@@ -19,11 +19,11 @@ public class MyListView extends Pane {
     public List<Node> set() {
         List<Node> ret = new ArrayList<>();
 
-        listView = new ListView();
-        listView.setPrefSize(175, 330);
-        listView.setLayoutY(43);
-        listView.setLayoutX(10);
-        ret.add(listView);
+        attributesList = new ListView();  // attributes list
+        attributesList.setPrefSize(175, 330);
+        attributesList.setLayoutY(43);
+        attributesList.setLayoutX(10);
+        ret.add(attributesList);
 
 
         openXML = new Button("1. Open XML");

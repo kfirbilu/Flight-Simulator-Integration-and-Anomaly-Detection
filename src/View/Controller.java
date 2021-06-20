@@ -54,7 +54,7 @@ public class Controller extends Pane implements Observer, Initializable {
         myListView.openCSV.setOnAction((e) -> openCSV());
         myListView.openXML.setOnAction((e)->LoadXML());
         myListView.openAlgo.setOnAction((e)->loadAlgorithm());
-        myListView.listView.setOnMouseClicked((e) -> setLineCharts((String)myListView.listView.getSelectionModel().getSelectedItem()));
+        myListView.attributesList.setOnMouseClicked((e) -> setLineCharts((String)myListView.attributesList.getSelectionModel().getSelectedItem()));
 
         board.getChildren().addAll(myButtons.set());
         myButtons.play.setOnAction((e) -> Play());
@@ -213,7 +213,7 @@ public class Controller extends Pane implements Observer, Initializable {
             }
             if (resultOpenCSV.getValue().intern() == "OK") {
                 for (String names : viewModel.getColsNames()) {
-                    myListView.listView.getItems().add(names);
+                    myListView.attributesList.getItems().add(names);
                 }
 
                 //load the last XML
