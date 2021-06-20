@@ -20,22 +20,22 @@ public class MyListView extends Pane {
         List<Node> ret = new ArrayList<>();
 
         listView = new ListView();
-        listView.setPrefSize(175, 362);
+        listView.setPrefSize(175, 330);
         listView.setLayoutY(43);
-        listView.setLayoutX(10);  // was 25
+        listView.setLayoutX(10);
         ret.add(listView);
 
 
         openXML = new Button("1. Open XML");
         openXML.setLayoutX(10);
-        openXML.setLayoutY(410);
-        openXML.setPrefSize(85, 25);
+        openXML.setLayoutY(380);
+        openXML.setPrefSize(175, 25);
         ret.add(openXML);
 
         openAlgo = new Button("2. Open Algorithm");
-        openAlgo.setLayoutX(100);
+        openAlgo.setLayoutX(10);
         openAlgo.setLayoutY(410);
-        openAlgo.setPrefSize(85, 25);
+        openAlgo.setPrefSize(175, 25);
         ret.add(openAlgo);
 
         openCSV = new Button("3. Open CSV");
