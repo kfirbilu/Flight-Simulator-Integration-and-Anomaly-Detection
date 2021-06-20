@@ -549,7 +549,7 @@ public class Controller extends Pane implements Observer, Initializable {
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("load algorithm failed");
+            alert.setHeaderText("Loading algorithm failed");
             alert.setContentText("Please try again");
             alert.showAndWait();
         }
@@ -557,7 +557,7 @@ public class Controller extends Pane implements Observer, Initializable {
         {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
-            alert.setHeaderText("The algorithm was loaded successfully");
+            alert.setHeaderText("Algorithm loaded successfully");
             alert.setContentText(null);
             alert.showAndWait();
         }
