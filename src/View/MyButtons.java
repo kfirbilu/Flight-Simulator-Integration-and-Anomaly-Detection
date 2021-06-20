@@ -77,6 +77,8 @@ public class MyButtons extends Pane {
         playSpeed.setPrefSize(105, 36);
         ret.add(playSpeed);
 
+
+
         playSpeedDropDown = new ChoiceBox();
         playSpeedDropDown.getItems().addAll("x0.5", "x1.0", "x1.5", "x2.0");
         playSpeedDropDown.setLayoutX(695);
@@ -95,6 +97,25 @@ public class MyButtons extends Pane {
         timer.setLayoutY(525);
         timer.setLayoutX(610);
         ret.add(timer);
+
+
+        Label selectedFeature = new Label("Selected Feature");
+        selectedFeature.setFont(new Font(10));
+        selectedFeature.setLayoutX(260);
+        selectedFeature.setLayoutY(25);
+        selectedFeature.setPrefSize(100, 20);
+        ret.add(selectedFeature);
+
+
+
+        Label correlatedFeature = new Label("Correlated Feature");
+        correlatedFeature.setFont(new Font(10));
+        correlatedFeature.setLayoutX(460);
+        correlatedFeature.setLayoutY(25);
+        correlatedFeature.setPrefSize(100, 20);
+        ret.add(correlatedFeature);
+
+
 
         return ret;
     }
