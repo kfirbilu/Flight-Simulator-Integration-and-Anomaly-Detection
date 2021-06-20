@@ -54,6 +54,7 @@ public class Controller extends Pane implements Observer, Initializable {
         myListView.openCSV.setOnAction((e) -> openCSV());
         myListView.openXML.setOnAction((e)->LoadXML());
         myListView.openAlgo.setOnAction((e)->loadAlgorithm());
+        myMenu.exitProgram.setOnAction((e)->exitProgram());
         myListView.attributesList.setOnMouseClicked((e) -> setLineCharts((String)myListView.attributesList.getSelectionModel().getSelectedItem()));
 
         board.getChildren().addAll(myButtons.set());
@@ -186,6 +187,10 @@ public class Controller extends Pane implements Observer, Initializable {
         report = new SimpleIntegerProperty();
         report.set(0);
         report.bind(viewModel.getReport());
+    }
+
+    public void exitProgram(){
+        System.exit(0);
     }
 
     public void openCSV() {
