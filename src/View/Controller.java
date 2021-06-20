@@ -325,7 +325,7 @@ public class Controller extends Pane implements Observer, Initializable {
         FileChooser fc = new FileChooser();
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
         fc.setTitle("Load XML file"); //headline
-        fc.setInitialDirectory(new File("/")); //what happens when we click
+        fc.setInitialDirectory(new File("/"));
         File chosen = fc.showOpenDialog(null);
         chosenXMLFilePath.set(chosen.getAbsolutePath());
         viewModel.VMLoadXML();
@@ -348,7 +348,7 @@ public class Controller extends Pane implements Observer, Initializable {
         else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
-            alert.setHeaderText("The file was uploaded successfully");
+            alert.setHeaderText("The XML file uploaded successfully");
             alert.setContentText(null);
             alert.showAndWait();
             viewModel.VMsetMinRudder();
