@@ -232,36 +232,44 @@ public class Controller extends Pane implements Observer, Initializable {
                 myButtons.timer.setText("00:00:00.000");
                 viewModel.setMaxTimeSlider();
                 myButtons.slider.setMax(maxtimeSlider.getValue());
-                myClocksPannel.altimeter.setText("altimeter: 0.0");
-                myClocksPannel.airspeed.setText("airspeed: 0.0");
-                myClocksPannel.direction.setText("direction: 0.0");
-                myClocksPannel.pitch.setText("pitch: 0.0");
-                myClocksPannel.roll.setText("roll: 0.0");
-                myClocksPannel.yaw.setText("yaw: 0.0");
+                myClocksPannel.altimeter.setText("Altimeter: 0.0");
+                myClocksPannel.airspeed.setText("Airspeed: 0.0");
+                myClocksPannel.direction.setText("Direction: 0.0");
+                myClocksPannel.pitch.setText("Pitch: 0.0");
+                myClocksPannel.roll.setText("Roll: 0.0");
+                myClocksPannel.yaw.setText("Yaw: 0.0");
             }
         }
     }
 
     public void setListeners()
     {
+        String classModelZScore = "class Model.ZScore";
+        String classModelLinearRegression = "class Model.LinearRegression";
+        String classModelHybrid = "class Model.Hybrid";
+
         numofrow.addListener((observable, oldValue, newValue) -> {
             if ((int)oldValue + 1 != (int)newValue) {
                 setLeftLineChart(theColName);
                 setRightLineChart(theColName);
-                if (viewModel.getClassName().intern() == "class Model.ZScore") {
+                if (viewModel.getClassName().intern() == classModelZScore.intern()) {
                     setAlgorithmLineChart(theColName);
                 }
             }
+
             Platform.runLater(() -> myGraphs.leftSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmColValues().get(numofrow.getValue())))));
+
             Platform.runLater(() -> myGraphs.rightSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmCoralatedColValues().get(numofrow.getValue())))));
-            if (viewModel.getClassName().intern() == "class Model.LinearRegression") {
+
+
+            if (viewModel.getClassName().intern() == classModelLinearRegression.intern()) {
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().clear());
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().add((new XYChart.Data(viewModel.getAnomalyAlgorithmColValues().get(numofrow.getValue()), viewModel.getAnomalyAlgorithmCoralatedColValues().get(numofrow.getValue())))));
             }
-            if (viewModel.getClassName().intern() == "class Model.ZScore") {
+            if (viewModel.getClassName().intern() == classModelZScore.intern()) {
                 Platform.runLater(() -> myGraphs.algorithmSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getZScoreline().get(numofrow.getValue())))));
             }
-            if (viewModel.getClassName().intern() == "class Model.Hybrid") {
+            if (viewModel.getClassName().intern() == classModelHybrid.intern()) {
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().clear());
                 Platform.runLater(() -> myGraphs.algorithmSeries2.getData().add((new XYChart.Data(viewModel.getAnomalyAlgorithmColValues().get(numofrow.getValue()), viewModel.getAnomalyAlgorithmCoralatedColValues().get(numofrow.getValue())))));
             }
@@ -373,12 +381,12 @@ public class Controller extends Pane implements Observer, Initializable {
     {
         playStart = 0;
         myButtons.timer.setText("00:00:00.000");
-        myClocksPannel.altimeter.setText("altimeter: 0.0");
-        myClocksPannel.airspeed.setText("airspeed: 0.0");
-        myClocksPannel.direction.setText("direction: 0.0");
-        myClocksPannel.pitch.setText("pitch: 0.0");
-        myClocksPannel.roll.setText("roll: 0.0");
-        myClocksPannel.yaw.setText("yaw: 0.0");
+        myClocksPannel.altimeter.setText("Altimeter: 0.0");
+        myClocksPannel.airspeed.setText("Airspeed: 0.0");
+        myClocksPannel.direction.setText("Direction: 0.0");
+        myClocksPannel.pitch.setText("Pitch: 0.0");
+        myClocksPannel.roll.setText("Roll: 0.0");
+        myClocksPannel.yaw.setText("Yaw: 0.0");
         myButtons.slider.setValue(0);
         myJoystick.innerCircle.setCenterX(0);
         myJoystick.innerCircle.setCenterY(0);
@@ -512,13 +520,13 @@ public class Controller extends Pane implements Observer, Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField classDirectory = new TextField();
-        classDirectory.setPromptText("class directory");
+        classDirectory.setPromptText("Class directory");
         TextField className = new TextField();
-        className.setPromptText("class name");
+        className.setPromptText("Class name");
 
-        grid.add(new Label("class directory:"), 0, 0);
+        grid.add(new Label("Class directory:"), 0, 0);
         grid.add(classDirectory, 1, 0);
-        grid.add(new Label("class name:"), 0, 1);
+        grid.add(new Label("Class name:"), 0, 1);
         grid.add(className, 1, 1);
 
         dialog.getDialogPane().setContent(grid);

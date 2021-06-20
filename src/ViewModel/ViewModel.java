@@ -20,7 +20,7 @@ public class ViewModel extends AllViewModels {
 
     private ArrayList<Point> pointsForCircle;
 
-    private String className;
+    private String className="";
 
     private Line algorithmLine;
     private Circle algorithmCircle;
