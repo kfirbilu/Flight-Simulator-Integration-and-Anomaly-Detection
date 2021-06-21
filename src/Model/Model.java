@@ -455,6 +455,15 @@ public class Model extends AllModels {
         if (numofrow >= in.getRows().size() - 2) {
             timer.cancel();
             modelStop();
+            /*
+            if (out != null) {
+                out.close();
+                try {
+                    fg.close();
+                } catch (IOException e) {
+                }
+            }
+             */
         }
         else {
             if (out != null) {
