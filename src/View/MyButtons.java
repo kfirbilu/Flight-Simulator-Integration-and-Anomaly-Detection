@@ -107,13 +107,19 @@ public class MyButtons extends Pane {
         ret.add(selectedFeature);
 
 
-
         Label correlatedFeature = new Label("Correlated Feature");
         correlatedFeature.setFont(new Font(10));
         correlatedFeature.setLayoutX(460);
         correlatedFeature.setLayoutY(25);
         correlatedFeature.setPrefSize(100, 20);
         ret.add(correlatedFeature);
+
+        Label algorithmGraph = new Label("Algorithm Graph");
+        algorithmGraph.setFont(new Font(10));
+        algorithmGraph.setLayoutX(360);
+        algorithmGraph.setLayoutY(204);
+        algorithmGraph.setPrefSize(100, 20);
+        ret.add(algorithmGraph);
 
 
 
