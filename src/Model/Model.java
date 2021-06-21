@@ -679,6 +679,7 @@ public class Model extends AllModels {
     @Override
     public void modelSetRightLineChart(String colName)
     {
+
         List<CorrelatedFeatures> list = linearRegression.getNormalModel();
         for (CorrelatedFeatures features : list) {
             if (features.feature1.intern() == colName.intern())
@@ -689,6 +690,7 @@ public class Model extends AllModels {
     @Override
     public void modelSetAlgorithmLineChart(String colName)
     {
+
         if (realHybrid == 1)
             className = "class Model.Hybrid";
         reports = ad.detect(in);

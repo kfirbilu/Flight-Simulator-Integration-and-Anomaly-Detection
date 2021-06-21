@@ -189,9 +189,7 @@ public class Controller extends Pane implements Observer, Initializable {
         report.bind(viewModel.getReport());
     }
 
-    public void exitProgram(){
-        System.exit(0);
-    }
+
 
     public void openCSV() {
         FileChooser fc = new FileChooser();
@@ -249,6 +247,7 @@ public class Controller extends Pane implements Observer, Initializable {
 
     public void setListeners()
     {
+
         String classModelZScore = "class Model.ZScore";
         String classModelLinearRegression = "class Model.LinearRegression";
         String classModelHybrid = "class Model.Hybrid";
@@ -262,9 +261,10 @@ public class Controller extends Pane implements Observer, Initializable {
                 }
             }
 
-            Platform.runLater(() -> myGraphs.leftSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmColValues().get(numofrow.getValue())))));
+            Platform.runLater(() -> myGraphs.leftSeries.getData().add((new XYChart.Data(numofrow.getValue(), this.viewModel.getAlgorithmColValues().get(numofrow.getValue())))));
 
-            Platform.runLater(() -> myGraphs.rightSeries.getData().add((new XYChart.Data(numofrow.getValue(), viewModel.getAlgorithmCoralatedColValues().get(numofrow.getValue())))));
+            Platform.runLater(() -> myGraphs.rightSeries.getData().add((new XYChart.Data(numofrow.getValue(),viewModel.getAlgorithmCoralatedColValues().get(numofrow.getValue())))));
+
 
 
             if (viewModel.getClassName().intern() == classModelLinearRegression.intern()) {
@@ -353,7 +353,7 @@ public class Controller extends Pane implements Observer, Initializable {
         else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
-            alert.setHeaderText("The XML file uploaded successfully");
+            alert.setHeaderText("XML file loaded successfully");
             alert.setContentText(null);
             alert.showAndWait();
             viewModel.VMsetMinRudder();
@@ -435,6 +435,7 @@ public class Controller extends Pane implements Observer, Initializable {
 
     public void setLeftLineChart(String colName)
     {
+
         Platform.runLater(() ->myGraphs.leftSeries.getData().clear());
         viewModel.VMsetAlgorithmLineChart(colName);
         for (int i = 0; i <= numofrow.getValue(); i++)
@@ -566,4 +567,12 @@ public class Controller extends Pane implements Observer, Initializable {
     @Override
     public void update(Observable o, Object arg) {
     }
+
+
+
+    public void exitProgram(){
+        System.exit(0);
+    }
+
+
 }

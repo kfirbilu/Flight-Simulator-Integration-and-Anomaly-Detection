@@ -399,6 +399,7 @@ public class ViewModel extends AllViewModels {
     @Override
     public void VMsetAlgorithmLineChart(String colName)
     {
+
         model.modelSetAlgorithmLineChart(colName);
         className = model.getClassName();
         algorithmColValues = model.getAlgorithmColValues();
