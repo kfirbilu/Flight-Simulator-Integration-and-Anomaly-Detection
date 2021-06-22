@@ -247,6 +247,8 @@ public class Controller extends Pane implements Observer, Initializable {
 
     public void setListeners()
     {
+        if (theColName==null)  // default colname in case the user didnt pick one
+            theColName = "ailron";
 
         String classModelZScore = "class Model.ZScore";
         String classModelLinearRegression = "class Model.LinearRegression";
@@ -427,15 +429,23 @@ public class Controller extends Pane implements Observer, Initializable {
 
     public void setLineCharts (String colName)
     {
+        if (colName==null)  // default colname in case the user didnt pick one
+            colName = "ailron";
+
         theColName = colName;
         setLeftLineChart(colName);
         setRightLineChart(colName);
+
         setAlgorithmLineChart(colName);
     }
 
     public void setLeftLineChart(String colName)
     {
+        if (colName==null)  // default colname in case the user didnt pick one
+            colName = "ailron";
+
         Platform.runLater(() ->myGraphs.leftSeries.getData().clear());
+
         viewModel.VMsetAlgorithmLineChart(colName);
         for (int i = 0; i <= numofrow.getValue(); i++)
         {
@@ -447,7 +457,11 @@ public class Controller extends Pane implements Observer, Initializable {
 
     public void setRightLineChart(String colName)
     {
+        if (colName==null)  // default colname in case the user didnt pick one
+            colName = "ailron";
+
         Platform.runLater(() ->myGraphs.rightSeries.getData().clear());
+
         viewModel.VMsetAlgorithmLineChart(colName);
         for (int i = 0; i <= numofrow.getValue(); i++)
         {
@@ -460,54 +474,58 @@ public class Controller extends Pane implements Observer, Initializable {
 
     public void setAlgorithmLineChart(String colName)
     {
-        Platform.runLater(() -> myGraphs.algorithmSeries.getData().clear());
-        Platform.runLater(() -> myGraphs.algorithmSeries1.getData().clear());
 
-        if (viewModel.getClassName().intern() == "class Model.LinearRegression") {
 
-            viewModel.VMsetAlgorithmLineChart(colName);
+            if (colName == null)  // default colname in case the user didnt pick one
+                colName = "ailron";
 
-            algorithmLine = viewModel.getAlgorithmLine();
-            if (viewModel.getMinColValue() == 0 || viewModel.getMaxColValue() == 0) {
-                for (int i = -100; i < 100; i++) {
-                    float y = algorithmLine.f(i);
-                    int finalI = i;
-                    Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(finalI, y)));
+            Platform.runLater(() -> myGraphs.algorithmSeries.getData().clear());
+            Platform.runLater(() -> myGraphs.algorithmSeries1.getData().clear());
+
+            if (viewModel.getClassName().intern() == "class Model.LinearRegression") {
+
+
+               viewModel.VMsetAlgorithmLineChart(colName);
+
+                algorithmLine = viewModel.getAlgorithmLine();
+                if (viewModel.getMinColValue() == 0 || viewModel.getMaxColValue() == 0) {
+                    for (int i = -100; i < 100; i++) {
+                        float y = algorithmLine.f(i);
+                        int finalI = i;
+                        Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(finalI, y)));
+                    }
+                } else {
+                    for (int i = viewModel.getMinColValue(); i < viewModel.getMaxColValue(); i++) {
+                        float y = algorithmLine.f(i);
+                        int finalI = i;
+                        Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(finalI, y)));
+                    }
                 }
-            } else {
-                for (int i = viewModel.getMinColValue(); i < viewModel.getMaxColValue(); i++) {
-                    float y = algorithmLine.f(i);
+                for (int i = 0; i < viewModel.getAlgorithmColValues().size(); i += 50) {
                     int finalI = i;
-                    Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(finalI, y)));
+                    Platform.runLater(() -> myGraphs.algorithmSeries1.getData().add(new XYChart.Data(viewModel.getAlgorithmColValues().get(finalI), viewModel.getAlgorithmCoralatedColValues().get(finalI))));
                 }
             }
-            for (int i = 0; i < viewModel.getAlgorithmColValues().size(); i+=50) {
-                int finalI = i;
-                Platform.runLater(() -> myGraphs.algorithmSeries1.getData().add(new XYChart.Data(viewModel.getAlgorithmColValues().get(finalI), viewModel.getAlgorithmCoralatedColValues().get(finalI))));
-            }
-        }
 
-        if (viewModel.getClassName().intern() == "class Model.ZScore")
-        {
+            if (viewModel.getClassName().intern() == "class Model.ZScore") {
 
-            for (int i = 0; i <= numofrow.getValue(); i++)
-            {
-                int finalI = i;
-                Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(finalI, viewModel.getZScoreline().get(finalI))));
-            }
-        }
-
-        if (viewModel.getClassName().intern() == "class Model.Hybrid")
-        {
-            for (Point point : viewModel.getPointsForCircle()) {
-                Platform.runLater(() ->myGraphs.algorithmSeries.getData().add(new XYChart.Data(point.x, point.y)));
+                for (int i = 0; i <= numofrow.getValue(); i++) {
+                    int finalI = i;
+                    Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(finalI, viewModel.getZScoreline().get(finalI))));
+                }
             }
 
-            for (int i = 0; i < viewModel.getAlgorithmColValues().size(); i++) {
-                int finalI = i;
-                Platform.runLater(() -> myGraphs.algorithmSeries1.getData().add(new XYChart.Data(viewModel.getAlgorithmColValues().get(finalI), viewModel.getAlgorithmCoralatedColValues().get(finalI))));
+            if (viewModel.getClassName().intern() == "class Model.Hybrid") {
+                for (Point point : viewModel.getPointsForCircle()) {
+                    Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(point.x, point.y)));
+                }
+
+                for (int i = 0; i < viewModel.getAlgorithmColValues().size(); i++) {
+                    int finalI = i;
+                    Platform.runLater(() -> myGraphs.algorithmSeries1.getData().add(new XYChart.Data(viewModel.getAlgorithmColValues().get(finalI), viewModel.getAlgorithmCoralatedColValues().get(finalI))));
+                }
             }
-        }
+
     }
 
     public void loadAlgorithm()

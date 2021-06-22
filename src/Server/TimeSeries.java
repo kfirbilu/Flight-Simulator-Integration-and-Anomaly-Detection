@@ -123,6 +123,8 @@ public class TimeSeries {
 
     public int getColIndex (String colName)
     {
+        if (colName==null)  // default colname in case the user didnt pick one
+            colName = "ailron";
         for (int i = 0; i < cols.length; i++)
         {
             if (cols[i].name.intern() == colName.intern())

@@ -3,6 +3,7 @@ package Model;
 
 import Algorithms.*;
 import Server.*;
+import View.Controller;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -383,6 +384,7 @@ public class Model extends AllModels {
                 timer15.is_running = true;
             }
             playFlag = 0;
+
         }
     }
 
@@ -680,87 +682,93 @@ public class Model extends AllModels {
     public void modelSetRightLineChart(String colName)
     {
 
-        List<CorrelatedFeatures> list = linearRegression.getNormalModel();
-        for (CorrelatedFeatures features : list) {
-            if (features.feature1.intern() == colName.intern())
-                nameOfCoralatedCol = features.feature2;
-        }
+            if (colName == null)  // default colname in case the user didnt pick one
+                colName = "ailron";
+
+            List<CorrelatedFeatures> list = linearRegression.getNormalModel();
+            for (CorrelatedFeatures features : list) {
+                if (features.feature1.intern() == colName.intern())
+                    nameOfCoralatedCol = features.feature2;
+            }
+
     }
 
     @Override
     public void modelSetAlgorithmLineChart(String colName)
     {
 
-        if (realHybrid == 1)
-            className = "class Model.Hybrid";
-        reports = ad.detect(in);
-        modelSetRightLineChart(colName);
-        algorithmColValues.clear();
-        algorithmCoralatedColValues.clear();
-        anomalyAlgorithmColValues.clear();
-        anomalyAlgorithmCoralatedColValues.clear();
+            if (colName == null)  // default colname in case the user didnt pick one
+                colName = "ailron";
 
-        for (float value : regularFlight.getCols()[regularFlight.getColIndex(colName)].getFloats()) {
-            algorithmColValues.add(value);
-            if (minColValue > value)
-                minColValue = (int) value;
-            if (maxColValue < value)
-                maxColValue = (int) value;
-        }
+            if (realHybrid == 1)
+                className = "class Model.Hybrid";
+            reports = ad.detect(in);
+            modelSetRightLineChart(colName);
+            algorithmColValues.clear();
+            algorithmCoralatedColValues.clear();
+            anomalyAlgorithmColValues.clear();
+            anomalyAlgorithmCoralatedColValues.clear();
 
-        for (float value : regularFlight.getCols()[regularFlight.getColIndex(nameOfCoralatedCol)].getFloats()) {
-            algorithmCoralatedColValues.add(value);
-        }
-
-        if (className.intern() == "class Model.Hybrid")
-        {
-            realHybrid = 1;
-            if (hybrid.whichAlgorithm.get(colName).intern() == "LinearRegression") {
-                className = "class Model.LinearRegression";
+            for (float value : regularFlight.getCols()[regularFlight.getColIndex(colName)].getFloats()) {
+                algorithmColValues.add(value);
+                if (minColValue > value)
+                    minColValue = (int) value;
+                if (maxColValue < value)
+                    maxColValue = (int) value;
             }
-            if (hybrid.whichAlgorithm.get(colName).intern() == "ZScore") {
-                className = "class Model.ZScore";
+
+            for (float value : regularFlight.getCols()[regularFlight.getColIndex(nameOfCoralatedCol)].getFloats()) {
+                algorithmCoralatedColValues.add(value);
             }
-            if (hybrid.whichAlgorithm.get(colName).intern() == "Hybrid") {
-                for (float value :in.getCols()[in.getColIndex(colName)].getFloats()) {
+
+            if (className.intern() == "class Model.Hybrid") {
+                realHybrid = 1;
+                if (hybrid.whichAlgorithm.get(colName).intern() == "LinearRegression") {
+                    className = "class Model.LinearRegression";
+                }
+                if (hybrid.whichAlgorithm.get(colName).intern() == "ZScore") {
+                    className = "class Model.ZScore";
+                }
+                if (hybrid.whichAlgorithm.get(colName).intern() == "Hybrid") {
+                    for (float value : in.getCols()[in.getColIndex(colName)].getFloats()) {
+                        anomalyAlgorithmColValues.add(value);
+                    }
+
+                    for (float value : in.getCols()[in.getColIndex(nameOfCoralatedCol)].getFloats()) {
+                        anomalyAlgorithmCoralatedColValues.add(value);
+                    }
+
+                    algorithmCircle = hybrid.whoCircle.get(colName);
+                    for (double i = 0; i < 360; i += 0.5) {
+                        float x = (float) (algorithmCircle.r * Math.cos(i) + algorithmCircle.c.x);
+                        float y = (float) (algorithmCircle.r * Math.sin(i) + algorithmCircle.c.y);
+                        pointsForCircle.add(new Point(x, y));
+                    }
+                }
+            }
+
+            if (className.intern() == "class Model.LinearRegression") {
+                for (float value : in.getCols()[in.getColIndex(colName)].getFloats()) {
                     anomalyAlgorithmColValues.add(value);
                 }
 
                 for (float value : in.getCols()[in.getColIndex(nameOfCoralatedCol)].getFloats()) {
                     anomalyAlgorithmCoralatedColValues.add(value);
                 }
-
-                algorithmCircle = hybrid.whoCircle.get(colName);
-                for(double i = 0; i<360; i+=0.5)
-                {
-                    float x=(float) (algorithmCircle.r*Math.cos(i) + algorithmCircle.c.x);
-                    float y=(float) (algorithmCircle.r*Math.sin(i) + algorithmCircle.c.y);
-                    pointsForCircle.add(new Point(x, y));
+                List<CorrelatedFeatures> list = linearRegression.getNormalModel();
+                for (CorrelatedFeatures features : list) {
+                    if (features.feature1.intern() == colName.intern() && features.feature2.intern() == nameOfCoralatedCol.intern()) {
+                        algorithmLine = features.lin_reg;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (className.intern() == "class Model.LinearRegression") {
-            for (float value :in.getCols()[in.getColIndex(colName)].getFloats()) {
-                anomalyAlgorithmColValues.add(value);
+            if (className.intern() == "class Model.ZScore") {
+                ZScoreLine = zScore.colZscores.get(regularFlight.getColIndex(colName));
             }
 
-            for (float value : in.getCols()[in.getColIndex(nameOfCoralatedCol)].getFloats()) {
-                anomalyAlgorithmCoralatedColValues.add(value);
-            }
-            List<CorrelatedFeatures> list = linearRegression.getNormalModel();
-            for (CorrelatedFeatures features : list) {
-                if (features.feature1.intern() == colName.intern() && features.feature2.intern() == nameOfCoralatedCol.intern()) {
-                    algorithmLine = features.lin_reg;
-                    break;
-                }
-            }
-        }
 
-        if (className.intern() == "class Model.ZScore")
-        {
-            ZScoreLine = zScore.colZscores.get(regularFlight.getColIndex(colName));
-        }
 
     }
 

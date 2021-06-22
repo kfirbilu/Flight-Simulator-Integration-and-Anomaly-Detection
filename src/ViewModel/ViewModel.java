@@ -399,6 +399,8 @@ public class ViewModel extends AllViewModels {
     @Override
     public void VMsetAlgorithmLineChart(String colName)
     {
+        if (colName==null)  // default colname in case the user didnt pick one
+            colName = "ailron";
 
         model.modelSetAlgorithmLineChart(colName);
         className = model.getClassName();
