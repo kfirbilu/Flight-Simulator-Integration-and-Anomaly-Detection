@@ -701,7 +701,7 @@ public class Model extends AllModels {
                 colName = "ailron";
 
             if (realHybrid == 1)
-                className = "class Model.Hybrid";
+                className = "class Algorithms.Hybrid"; // was Model.
             reports = ad.detect(in);
             modelSetRightLineChart(colName);
             algorithmColValues.clear();
@@ -721,13 +721,13 @@ public class Model extends AllModels {
                 algorithmCoralatedColValues.add(value);
             }
 
-            if (className.intern() == "class Model.Hybrid") {
+            if (className.intern() == "class Algorithms.Hybrid") { // was Model.
                 realHybrid = 1;
                 if (hybrid.whichAlgorithm.get(colName).intern() == "LinearRegression") {
-                    className = "class Model.LinearRegression";
+                    className = "class Algorithms.LinearRegression";
                 }
                 if (hybrid.whichAlgorithm.get(colName).intern() == "ZScore") {
-                    className = "class Model.ZScore";
+                    className = "class Algorithms.ZScore";
                 }
                 if (hybrid.whichAlgorithm.get(colName).intern() == "Hybrid") {
                     for (float value : in.getCols()[in.getColIndex(colName)].getFloats()) {
@@ -747,7 +747,7 @@ public class Model extends AllModels {
                 }
             }
 
-            if (className.intern() == "class Model.LinearRegression") {
+            if (className.intern() == "class Algorithms.LinearRegression") { // was Model.
                 for (float value : in.getCols()[in.getColIndex(colName)].getFloats()) {
                     anomalyAlgorithmColValues.add(value);
                 }
@@ -764,7 +764,7 @@ public class Model extends AllModels {
                 }
             }
 
-            if (className.intern() == "class Model.ZScore") {
+            if (className.intern() == "class Algorithms.ZScore") { // was Model.
                 ZScoreLine = zScore.colZscores.get(regularFlight.getColIndex(colName));
             }
 

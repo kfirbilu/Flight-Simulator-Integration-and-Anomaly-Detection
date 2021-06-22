@@ -250,9 +250,9 @@ public class Controller extends Pane implements Observer, Initializable {
         if (theColName==null)  // default colname in case the user didnt pick one
             theColName = "ailron";
 
-        String classModelZScore = "class Model.ZScore";
-        String classModelLinearRegression = "class Model.LinearRegression";
-        String classModelHybrid = "class Model.Hybrid";
+        String classModelZScore = "class Algorithms.ZScore"; // kfir was Model.
+        String classModelLinearRegression = "class Algorithms.LinearRegression";
+        String classModelHybrid = "class Algorithms.Hybrid";
 
         numofrow.addListener((observable, oldValue, newValue) -> {
             if ((int)oldValue + 1 != (int)newValue) {
@@ -515,7 +515,7 @@ public class Controller extends Pane implements Observer, Initializable {
                 }
             }
 
-            if (viewModel.getClassName().intern() == "class Model.Hybrid") {
+            if (viewModel.getClassName().intern() == "class Algorithms.Hybrid") { // was Model.
                 for (Point point : viewModel.getPointsForCircle()) {
                     Platform.runLater(() -> myGraphs.algorithmSeries.getData().add(new XYChart.Data(point.x, point.y)));
                 }

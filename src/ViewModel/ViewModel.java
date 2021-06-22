@@ -407,7 +407,7 @@ public class ViewModel extends AllViewModels {
         algorithmColValues = model.getAlgorithmColValues();
         algorithmCoralatedColValues = model.getAlgorithmCoralatedColValues();
 
-        if (className.intern() == "class Model.LinearRegression")
+        if (className.intern() == "class Algorithms.LinearRegression") // was Model.LinearRegression kfir
         {
             anomalyAlgorithmColValues = model.getAnomalyAlgorithmColValues();
             anomalyAlgorithmCoralatedColValues = model.getAnomalyAlgorithmCoralatedColValues();
@@ -416,12 +416,12 @@ public class ViewModel extends AllViewModels {
             minColValue = model.getMinColValue();
         }
 
-        if (className.intern() == "class Model.ZScore")
+        if (className.intern() == "class Algorithms.ZScore") // kfir
         {
             ZScoreline = model.getZScoreLine();
         }
 
-        if (className.intern() == "class Model.Hybrid")
+        if (className.intern() == "class Algorithms.Hybrid")
         {
             anomalyAlgorithmColValues = model.getAnomalyAlgorithmColValues();
             anomalyAlgorithmCoralatedColValues = model.getAnomalyAlgorithmCoralatedColValues();
