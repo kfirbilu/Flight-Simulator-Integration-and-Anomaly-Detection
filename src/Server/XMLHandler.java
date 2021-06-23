@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HandleXML {
+public class XMLHandler {
 
     public List<UserSettings> PropertyList = new ArrayList<>();
     public Map<String, String> RealToAssosicate = new HashMap<>();

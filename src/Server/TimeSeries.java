@@ -16,11 +16,11 @@ public class TimeSeries {
 
         private String name;
 
-        private ArrayList<Float> floats;
+        private ArrayList<Float> floatsArr;
 
         public col(String name) {
             this.name = name;
-            this.floats = new ArrayList<Float>();
+            this.floatsArr = new ArrayList<Float>();
         }
 
         public String getName() {
@@ -32,14 +32,14 @@ public class TimeSeries {
         }
 
         public ArrayList<Float> getFloats() {
-            return floats;
+            return floatsArr;
         }
 
     }
 
-    private col[] cols;
+    private col[] colsArr;
 
-    private ArrayList<String> rows = new ArrayList<>();
+    private ArrayList<String> rowsArr = new ArrayList<>();
 
     public double correlationTresh = 0.9;
 
@@ -62,23 +62,23 @@ public class TimeSeries {
 
             String[] value = line.split(",");
 
-            cols = new col[value.length];
+            colsArr = new col[value.length];
 
             for (int i = 0; i < value.length; i++)
-                cols[i] = new col(value[i]);
+                colsArr[i] = new col(value[i]);
 
             line = bufferedReader.readLine();
-            rows.add(line);
+            rowsArr.add(line);
 
             while (line != null) {
 
                 value = line.split(",");
 
                 for (int j = 0; j < value.length; j++)
-                    cols[j].getFloats().add(Float.parseFloat(value[j]));
+                    colsArr[j].getFloats().add(Float.parseFloat(value[j]));
 
                 line = bufferedReader.readLine();
-                rows.add(line);
+                rowsArr.add(line);
 
             }
 
@@ -94,11 +94,11 @@ public class TimeSeries {
     }
 
     public col[] getCols() {
-        return cols;
+        return colsArr;
     }
 
     public ArrayList<String> getRows() {
-        return rows;
+        return rowsArr;
     }
 
     public float[] ArrListToArr(ArrayList<Float> list) {
@@ -125,9 +125,9 @@ public class TimeSeries {
     {
         if (colName==null)  // default colname in case the user didnt pick one
             colName = "ailron";
-        for (int i = 0; i < cols.length; i++)
+        for (int i = 0; i < colsArr.length; i++)
         {
-            if (cols[i].name.intern() == colName.intern())
+            if (colsArr[i].name.intern() == colName.intern())
                 return i;
         }
         return -1;

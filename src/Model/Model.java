@@ -3,7 +3,6 @@ package Model;
 
 import Algorithms.*;
 import Server.*;
-import View.Controller;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -62,7 +61,7 @@ public class Model extends AllModels {
     timer15 timer15;
 
 
-    HandleXML XML_settings;
+    XMLHandler XML_settings;
     String CSVpath;
     String _speed;
 
@@ -232,18 +231,18 @@ public class Model extends AllModels {
 
     @Override
     public void ModelLoadXML(String chosenPath) {
-        HandleXML handleXML = new HandleXML();
+        XMLHandler XMLHandler = new XMLHandler();
         try {
-            handleXML.deserializeFromXML(chosenPath);
+            XMLHandler.deserializeFromXML(chosenPath);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (handleXML.WrongFormatAlert == true)
+        if (XMLHandler.WrongFormatAlert == true)
             resultLoadXML = "WrongFormatAlert";
-        else if (handleXML.MissingArgumentsAlert == true)
+        else if (XMLHandler.MissingArgumentsAlert == true)
             resultLoadXML = "MissingArgumentAlert";
         else {
-            XML_settings = handleXML;
+            XML_settings = XMLHandler;
             resultLoadXML = "SuccessAlert";
             regularFlight = new TimeSeries(XML_settings.additionalSettings.getProperFlightFile());
             regularFlight.setCorrelationTresh(0);
@@ -277,14 +276,14 @@ public class Model extends AllModels {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            HandleXML handleXML = new HandleXML();
-            handleXML.deserializeFromXML(chosen);
+            XMLHandler XMLHandler = new XMLHandler();
+            XMLHandler.deserializeFromXML(chosen);
             try {
-                handleXML.deserializeFromXML(chosen);
+                XMLHandler.deserializeFromXML(chosen);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            XML_settings = handleXML;
+            XML_settings = XMLHandler;
             regularFlight = new TimeSeries(XML_settings.additionalSettings.getProperFlightFile());
             regularFlight.setCorrelationTresh(0);
             linearRegression.learnNormal(regularFlight);

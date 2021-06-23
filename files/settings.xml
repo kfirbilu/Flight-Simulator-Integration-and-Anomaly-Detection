@@ -157,7 +157,7 @@
 		<long>100</long>
       </void>
       <void property="properFlightFile">
-        <string>C:\\Users\\kfirb\\IdeaProjects\\PTM2-ProjectOriginal\\Files\\reg_flight (4).csv</string>
+        <string>C:\\Users\\kfirb\\IdeaProjects\\PTM2-ProjectOriginal\\Files\\reg_flight.csv</string>
       </void>
       <void property="algorithmFile">
          <string>desktop10000.www</string>
